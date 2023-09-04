@@ -1,0 +1,4 @@
+Liberraies
+Django
+django_db_logger  (for local db logging)
+mssql-django      (for sql config)

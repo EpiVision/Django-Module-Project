@@ -1,0 +1,40 @@
+This is a warning message at 2023-08-31 11:32:43.602944 hour
+This is a warning message at 2023-08-31 11:33:17.989262 hour
+Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Muhammad Ali Murtaza\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Muhammad Ali Murtaza\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\FYP\Projects\API Learning in Django\oauth\moduleProject\logs\views.py", line 15, in index
+    logger.error('This is an error message at '+ datetime.datetime.now() + ' hour')
+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+TypeError: can only concatenate str (not "datetime.datetime") to str
+This is a warning message at 2023-08-31 11:33:39.174749 hour
+This is an error message at 2023-08-31 11:33:39.174749 hour
+This is a warning message at 2023-08-31 11:34:39.959019 hour
+This is an error message at 2023-08-31 11:34:39.959019 hour
+This is a warning message at 2023-08-31 11:37:22.585284 hour
+This is a warning message at 2023-08-31 13:53:34.893112 hour
+This is a warning message at 2023-08-31 18:27:48.558548 hour
+This is a warning message at 2023-08-31 18:29:02.484896 hour
+This is a warning message at 2023-08-31 18:29:49.729455 hour
+This is a warning message at 2023-08-31 18:30:25.407432 hour
+This is a warning message at 2023-08-31 18:31:26.760450 hour
+This is a warning message at 2023-08-31 18:31:26.856450 hour
+This is a warning message at 2023-08-31 19:11:47.179010 hour
+This is a warning message at 2023-08-31 19:12:39.543501 hour
+This is a warning message at 2023-08-31 19:18:33.776067 hour
+This is a warning message at 2023-08-31 19:22:49.186723 hour
+This is a warning message at 2023-08-31 19:24:37.109796 hour
+This is a warning message at 2023-08-31 19:25:01.075076 hour
+This is a warning message at 2023-08-31 19:27:01.305680 hour
+This is a warning message at 2023-08-31 19:44:34.885815 hour
+This is a warning message at 2023-08-31 19:45:58.534967 hour
+This is a warning message at 2023-08-31 19:46:57.087820 hour
+This is a warning message at 2023-08-31 19:49:29.592025 hour
+This is a warning message at 2023-08-31 19:49:30.443320 hour
+This is a warning message at 2023-08-31 19:57:13.395502 hour
+This is a warning message at 2023-08-31 21:11:29.873685 hour
