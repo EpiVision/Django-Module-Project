@@ -1,0 +1,5 @@
+(OAuth2 Authentication)
+https://studygyaan.com/django/oauth2-authentication-in-django-rest-framework
+
+(Sign in with Google)
+https://www.section.io/engineering-education/django-google-oauth/
