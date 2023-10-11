@@ -45,7 +45,7 @@ const MainRoutes = {
       path: 'utils',
       children: [
         {
-          path: 'util-typography',
+          path: ' ',
           element: <UtilsTypography />
         }
       ]
@@ -86,6 +86,7 @@ const MainRoutes = {
         }
       ]
     },
+
     {
       path: 'sample-page',
       element: <SamplePage />
