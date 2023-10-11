@@ -11,7 +11,7 @@ import TotalIncomeDarkCard from './TotalIncomeDarkCard';
 import TotalIncomeLightCard from './TotalIncomeLightCard';
 import TotalGrowthBarChart from './TotalGrowthBarChart';
 import { gridSpacing } from 'store/constant';
-
+import { PieChartYD } from './PieChart.tsx';
 // ==============================|| DEFAULT DASHBOARD ||============================== //
 
 const Dashboard = () => {
@@ -52,6 +52,11 @@ const Dashboard = () => {
           </Grid>
         </Grid>
       </Grid> */}
+      <Grid item xs={12}>
+        <Grid item lg={4} md={6} sm={6} xs={12}>
+          <PieChartYD />
+        </Grid>
+      </Grid>
     </Grid>
   );
 };
