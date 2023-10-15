@@ -24,14 +24,15 @@ import {
 
 // third party
 import * as Yup from 'yup';
-import { Formik } from 'formik';
+import { Formik, Field } from 'formik';
+import { MuiTelInput } from 'mui-tel-input';
 
 // project imports
 import useScriptRef from 'hooks/useScriptRef';
 import Google from 'assets/images/icons/social-google.svg';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
-
+import { baseURL } from 'utils/constants';
 // assets
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -44,6 +45,7 @@ const FirebaseRegister = ({ ...others }) => {
   const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
   const customization = useSelector((state) => state.customization);
   const [showPassword, setShowPassword] = useState(false);
+  const [phone, setPhone] = useState('+92');
   const [checked, setChecked] = useState(true);
 
   const [strength, setStrength] = useState(0);
@@ -56,7 +58,9 @@ const FirebaseRegister = ({ ...others }) => {
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
-
+  const handlePhoneChange = (value) => {
+    setPhone(value);
+  };
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
@@ -128,6 +132,8 @@ const FirebaseRegister = ({ ...others }) => {
         initialValues={{
           email: '',
           password: '',
+          fname: '',
+          lname: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
@@ -137,8 +143,32 @@ const FirebaseRegister = ({ ...others }) => {
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
             if (scriptedRef.current) {
+              values.phone = phone;
+              fetch(baseURL + '/register/', {
+                method: 'POST',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(values)
+              }).then((response) => {
+                if (response.status === 200) {
+                  response.json().then((data) => {
+                    console.log(data);
+                    if (data.status === 'success') {
+                      // localStorage.setItem('token', data.token);
+                      window.location.replace('/login/');
+                    }
+                  });
+                } else {
+                  response.json().then((data) => {
+                    console.log(data);
+                    alert(data.message);
+                  });
+                }
+              });
               setStatus({ success: true });
-              setSubmitting(false);
+              setSubmitting(true);
             }
           } catch (err) {
             console.error(err);
@@ -154,28 +184,43 @@ const FirebaseRegister = ({ ...others }) => {
           <form noValidate onSubmit={handleSubmit} {...others}>
             <Grid container spacing={matchDownSM ? 0 : 2}>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="First Name"
-                  margin="normal"
-                  name="fname"
-                  type="text"
-                  defaultValue=""
-                  sx={{ ...theme.typography.customInput }}
-                />
+              <Field
+                validateOnBlur
+                validateOnChange
+                name="fname">
+                {({ field, form }) => (
+                <TextField 
+                  name={"fname"}
+                  label="First Name" 
+                  margin="normal" 
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  type="text" 
+                  sx={{ ...theme.typography.customInput }} />
+                  )}
+              </Field>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Last Name"
-                  margin="normal"
-                  name="lname"
-                  type="text"
-                  defaultValue=""
-                  sx={{ ...theme.typography.customInput }}
-                />
+              <Field
+                validateOnBlur
+                validateOnChange
+                name="lname">
+                {({ field, form }) => (
+                <TextField 
+                  name={"lname"}
+                  label="Last Name" 
+                  margin="normal" 
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  type="text" 
+                  sx={{ ...theme.typography.customInput }} />
+                  )}
+              </Field>
               </Grid>
             </Grid>
+          
+            <MuiTelInput fullWidth value={phone} onChange={handlePhoneChange} />
+
             <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
               <InputLabel htmlFor="outlined-adornment-email-register">Email Address / Username</InputLabel>
               <OutlinedInput

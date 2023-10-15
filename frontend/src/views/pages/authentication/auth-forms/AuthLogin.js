@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-
+import { baseURL } from 'utils/constants';
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import {
@@ -120,9 +120,8 @@ const FirebaseLogin = ({ ...others }) => {
 
       <Formik
         initialValues={{
-          email: 'info@codedthemes.com',
-          password: '123456',
-          submit: null
+          email: 'abc@gmail.com',
+          password: '123456'
         }}
         validationSchema={Yup.object().shape({
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
@@ -131,7 +130,33 @@ const FirebaseLogin = ({ ...others }) => {
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
             if (scriptedRef.current) {
-              setStatus({ success: true });
+              // call api for login
+              fetch(baseURL + '/signIn/', {
+                method: 'POST',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(values)
+              }).then((response) => {
+                if (response.status === 200) {
+                  response.json().then((data) => {
+                    console.log(data);
+                    if (data.status === 'success') {
+                      // localStorage.setItem('token', data.token);
+                      localStorage.setItem('userId', data.userId);
+                      window.location.replace('/');
+                      setStatus({ success: true });
+                    }
+                  });
+                } else {
+                  response.json().then((data) => {
+                    console.log(data);
+                    alert(data.message);
+                    setStatus({ success: false });
+                  });
+                }
+              });
               setSubmitting(false);
             }
           } catch (err) {
@@ -145,7 +170,7 @@ const FirebaseLogin = ({ ...others }) => {
         }}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-          <form noValidate onSubmit={handleSubmit} {...others}>
+          <form onSubmit={handleSubmit} {...others}>
             <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
               <InputLabel htmlFor="outlined-adornment-email-login">Email Address / Username</InputLabel>
               <OutlinedInput
