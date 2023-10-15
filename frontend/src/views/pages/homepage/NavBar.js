@@ -12,8 +12,10 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
+import { useNavigate } from 'react-router-dom';
 import '../../../style.css'
 import Logo from 'ui-component/Logo';
+import { baseURL } from 'utils/constants';
 const pages = ['Home', 'Services', 'Pricing', 'Blog', 'About'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
@@ -35,7 +37,10 @@ function ResponsiveAppBar() {
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
-
+    const navigate = useNavigate();
+    const navigateLogin = () => {
+        navigate('/login');
+      };
     return (
         <AppBar position="static">
             <Container maxWidth="xl">
@@ -126,7 +131,7 @@ function ResponsiveAppBar() {
                             </Button>
                         ))}
                     </Box>
-                    <Button className=' bg-indigo-800 text-white p-3' sx={{ color: 'black', backgroundColor: '#4E3AB0' }}>
+                    <Button className=' bg-indigo-800 text-white p-3' onClick={navigateLogin} sx={{ color: 'black', backgroundColor: '#4E3AB0' }}>
                         Login
                     </Button>
                     {/* <Box sx={{ flexGrow: 0 }}>

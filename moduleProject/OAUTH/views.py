@@ -11,7 +11,7 @@ from django.contrib import auth
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from .models import Patient
-
+from .serializers import PatientSerializer
 class ProtectedResourceView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -52,10 +52,25 @@ def signIn(request):
     
     if user is not None:
         auth.login(request,user)      
-        return JsonResponse({'status': 'success', 'userId':user.id,'message': 'User logined successfully!'})
+        p = Patient.objects.get(accountid=user.id)
+        
+        if p is not None:
+            return JsonResponse({'status': 'success', 'userId':PatientSerializer(p).data,'message': 'User logined successfully!'})
+        else:
+            return JsonResponse({'status': 'success', 'userId':user.id,'message': 'User logined successfully!'})
     else:
         return JsonResponse({'status': 'failed', 'message': 'Invalid Credentials!'})
     
+@api_view(['POST'])
+@authentication_classes([])
+@permission_classes([])
+@csrf_protect
+@csrf_exempt
+def logout(request):
+    auth.logout(request)
+    return JsonResponse({'status': 'success', 'message': 'User logout successfully!'})
+
+
 @api_view(['POST'])
 @authentication_classes([])
 @permission_classes([])

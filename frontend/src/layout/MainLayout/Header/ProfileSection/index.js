@@ -35,6 +35,7 @@ import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
 import UpgradePlanCard from './UpgradePlanCard';
 import User1 from 'assets/images/users/user-round.svg';
+import { baseURL } from 'utils/constants';
 
 // assets
 import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons';
@@ -56,6 +57,28 @@ const ProfileSection = () => {
    * */
   const anchorRef = useRef(null);
   const handleLogout = async () => {
+    fetch(baseURL + '/logout/', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    }).then((response) => {
+      if (response.status === 200) {
+        response.json().then((data) => {
+          console.log(data);
+          if (data.status === 'success') {
+            localStorage.removeItem('userId');
+            window.location.replace('/homepage');
+          }
+        });
+      } else {
+        response.json().then((data) => {
+          console.log(data);
+          alert(data.message);
+        });
+      }
+    });
     console.log('Logout');
   };
 
@@ -157,12 +180,12 @@ const ProfileSection = () => {
                   <Box sx={{ p: 2 }}>
                     <Stack>
                       <Stack direction="row" spacing={0.5} alignItems="center">
-                        <Typography variant="h4">Good Morning,</Typography>
+                        <Typography variant="h4">Greetings!,</Typography>
                         <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
-                          Johne Doe
+                          {JSON.parse(localStorage.getItem('userId')).fullname}
                         </Typography>
                       </Stack>
-                      <Typography variant="subtitle2">Project Admin</Typography>
+                      <Typography variant="subtitle2">Patient</Typography>
                     </Stack>
                     <OutlinedInput
                       sx={{ width: '100%', pr: 1, pl: 2, my: 2 }}
@@ -186,7 +209,7 @@ const ProfileSection = () => {
                     <Box sx={{ p: 2 }}>
                       <UpgradePlanCard />
                       <Divider />
-                      <Card
+                      {/* <Card
                         sx={{
                           bgcolor: theme.palette.primary.light,
                           my: 2
@@ -228,7 +251,7 @@ const ProfileSection = () => {
                           </Grid>
                         </CardContent>
                       </Card>
-                      <Divider />
+                      <Divider /> */}
                       <List
                         component="nav"
                         sx={{

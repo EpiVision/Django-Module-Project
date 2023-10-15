@@ -144,7 +144,8 @@ const FirebaseLogin = ({ ...others }) => {
                     console.log(data);
                     if (data.status === 'success') {
                       // localStorage.setItem('token', data.token);
-                      localStorage.setItem('userId', data.userId);
+                      var u = data.userId;
+                      localStorage.setItem('userId', JSON.stringify(u));                      
                       window.location.replace('/');
                       setStatus({ success: true });
                     }
