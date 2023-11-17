@@ -20,19 +20,23 @@ from logs import views
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth import views as auth_views
-from django.contrib.auth.views import LoginView
+# from django.contrib.auth.views import LoginView
 from OAUTH.views import ProtectedResourceView   # new
+# from allauth.account.views import LoginView, LogoutView, SignupView
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # path('accounts/', include('allauth.urls')),
     path('', include('charts.urls')),
     path('', include('OAUTH.urls')),
     # path('', views.index),
     path('', TemplateView.as_view(template_name="index.html")),
-    path('accounts/', LoginView.as_view()),
-    path('logout', LogoutView.as_view()),
+    # path('accounts/login/', LoginView.as_view(), name='account_login'),
+    # path('accounts/logout/', LogoutView.as_view(), name='account_logout'),
+    # path('accounts/signup/', SignupView.as_view(), name='account_signup'),
+    # path('logout', LogoutView.as_view()),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-    path('api/protected-resource/', ProtectedResourceView.as_view(), name='hello_world'),
+    # path('api/protected-resource/', ProtectedResourceView.as_view(), name='hello_world'),
 
 ]
