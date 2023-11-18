@@ -77,10 +77,12 @@ class LogoutView(views.APIView):
 
 
 class ProfileView(generics.RetrieveAPIView):
-    serializer_class = serializers.UserSerializer
-
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = serializers.PatientSerializer
+    
     def get_object(self):
-        return self.request.user
+        patient = Patient.objects.get(userid=self.request.user.id)
+        return patient
     
 class ProtectedResourceView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]

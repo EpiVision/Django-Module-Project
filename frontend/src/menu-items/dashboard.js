@@ -35,12 +35,12 @@ const dashboard = {
       id: 'default',
       title: 'Dashboard',
       type: 'item',
-      url: '/dashboard/default',
+      url: '/dashboard/',
       icon: icons.IconDashboard,
       breadcrumbs: false
     },
     {
-      id: 'sample-page',
+      id: 'stream-page',
       title: 'Stream',
       type: 'item',
       url: '/Stream',
@@ -48,7 +48,7 @@ const dashboard = {
       breadcrumbs: false
     },
     {
-      id: 'sample-page',
+      id: 'activity-page',
       title: 'Activity Logs',
       type: 'item',
       url: '/Activity-Logs',
@@ -56,7 +56,7 @@ const dashboard = {
       breadcrumbs: false
     },
     {
-      id: 'sample-page',
+      id: 'camera-page',
       title: 'Camera Management',
       type: 'item',
       url: '/Camera-Management',
@@ -64,7 +64,7 @@ const dashboard = {
       breadcrumbs: false
     },
     {
-      id: 'sample-page',
+      id: 'seizure-page',
       title: 'Seizure Analysis',
       type: 'item',
       url: '/Seizure-Analysis',
@@ -72,7 +72,7 @@ const dashboard = {
       breadcrumbs: false
     },
     {
-      id: 'sample-page',
+      id: 'profile-page',
       title: 'Patient Profile',
       type: 'item',
       url: '/Patient-Profile',
