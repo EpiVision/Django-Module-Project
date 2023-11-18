@@ -9,7 +9,29 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from .models import Patient
 
+# from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+# from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+# from dj_rest_auth.registration.views import SocialLoginView
+
+# from django.contrib.auth.mixins import LoginRequiredMixin
+# from django.views.generic import RedirectView
+
 from . import serializers
+
+# class GoogleLoginView(SocialLoginView):
+#     adapter_class = GoogleOAuth2Adapter
+#     callback_url = "http://localhost:3000/"
+#     client_class = OAuth2Client
+
+# class UserRedirectView(LoginRequiredMixin, RedirectView):
+#     """
+#     This view is needed by the dj-rest-auth-library in order to work the google login. It's a bug.
+#     """
+
+#     permanent = False
+
+#     def get_redirect_url(self):
+#         return "redirect-url"
 
 class LoginView(views.APIView):
     # This view should be accessible also for unauthenticated users.
@@ -19,9 +41,11 @@ class LoginView(views.APIView):
         serializer = serializers.LoginSerializer(data=self.request.data, context={ 'request': self.request })
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+        
         login(request, user)
         token = Token.objects.get_or_create(user=user) 
-        return Response({"token":str(token[0])}, status=status.HTTP_202_ACCEPTED)
+        print(serializers.UserSerializer(user).data)
+        return Response({"token":str(token[0]),"user":serializers.UserSerializer(user).data}, status=status.HTTP_202_ACCEPTED)
 
 class RegisterView(views.APIView):
     # This view should be accessible also for unauthenticated users.

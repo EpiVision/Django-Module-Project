@@ -155,10 +155,10 @@ const FirebaseRegister = ({ ...others }) => {
                 if (response.status === 200) {
                   response.json().then((data) => {
                     console.log(data);
-                    if (data.status === 'success') {
-                      // localStorage.setItem('token', data.token);
-                      window.location.replace('/login/');
-                    }
+                    window.location.replace('/login/');
+                    // if (data.status === 'success') {
+                    //   // localStorage.setItem('token', data.token);
+                    // }
                   });
                 } else {
                   response.json().then((data) => {

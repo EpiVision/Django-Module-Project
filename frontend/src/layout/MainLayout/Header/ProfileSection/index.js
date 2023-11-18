@@ -61,17 +61,15 @@ const ProfileSection = () => {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Token '+localStorage.getItem('token')
       }
     }).then((response) => {
-      if (response.status === 200) {
-        response.json().then((data) => {
-          console.log(data);
-          if (data.status === 'success') {
-            localStorage.removeItem('userId');
-            window.location.replace('/homepage');
-          }
-        });
+      if (response.status === 204) {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        window.location.replace('/');
+        
       } else {
         response.json().then((data) => {
           console.log(data);
@@ -182,7 +180,7 @@ const ProfileSection = () => {
                       <Stack direction="row" spacing={0.5} alignItems="center">
                         <Typography variant="h4">Greetings!,</Typography>
                         <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
-                          {JSON.parse(localStorage.getItem('userId')).fullname}
+                          {JSON.parse(localStorage.getItem('user')).first_name}
                         </Typography>
                       </Stack>
                       <Typography variant="subtitle2">Patient</Typography>

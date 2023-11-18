@@ -6,6 +6,13 @@ import Services from './services'
 import HomeFooter from './HomeFooter'
 import Banner from './Banner'
 const homepage = () => {
+    // check if user is logged in
+    if (localStorage.getItem('user') === null) {
+        // window.location.href = '/login'
+    }else{
+        window.location.href = '/dashboard'
+    }
+
     return (
         <div className='w-full m-10 overflow-hidden'>
             <div className='mt-0'>

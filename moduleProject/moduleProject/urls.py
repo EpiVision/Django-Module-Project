@@ -28,8 +28,8 @@ from OAUTH.views import ProtectedResourceView   # new
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('accounts/', include('allauth.urls')),
-    path('', include('charts.urls')),
     path('', include('OAUTH.urls')),
+    path('', include('charts.urls')),
     # path('', views.index),
     path('', TemplateView.as_view(template_name="index.html")),
     # path('accounts/login/', LoginView.as_view(), name='account_login'),

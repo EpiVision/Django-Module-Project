@@ -120,18 +120,18 @@ const FirebaseLogin = ({ ...others }) => {
 
       <Formik
         initialValues={{
-          email: 'abc@gmail.com',
+          username: 'abc@gmail.com',
           password: '123456'
         }}
         validationSchema={Yup.object().shape({
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+          username: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string().max(255).required('Password is required')
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
             if (scriptedRef.current) {
               // call api for login
-              fetch(baseURL + '/signIn/', {
+              fetch(baseURL + '/login/', {
                 method: 'POST',
                 headers: {
                   'Accept': 'application/json',
@@ -139,20 +139,17 @@ const FirebaseLogin = ({ ...others }) => {
                 },
                 body: JSON.stringify(values)
               }).then((response) => {
-                if (response.status === 200) {
+                if (response.status === 202) {
                   response.json().then((data) => {
                     console.log(data);
-                    if (data.status === 'success') {
-                      // localStorage.setItem('token', data.token);
-                      var u = data.userId;
-                      localStorage.setItem('userId', JSON.stringify(u));                      
-                      window.location.replace('/');
-                      setStatus({ success: true });
-                    }
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    window.location.replace('/dashboard');
+                    setStatus({ success: true });
                   });
                 } else {
                   response.json().then((data) => {
-                    console.log(data);
+                    console.log("error","data");
                     alert(data.message);
                     setStatus({ success: false });
                   });
@@ -172,21 +169,21 @@ const FirebaseLogin = ({ ...others }) => {
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form onSubmit={handleSubmit} {...others}>
-            <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
+            <FormControl fullWidth error={Boolean(touched.username && errors.username)} sx={{ ...theme.typography.customInput }}>
               <InputLabel htmlFor="outlined-adornment-email-login">Email Address / Username</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-email-login"
                 type="email"
-                value={values.email}
-                name="email"
+                value={values.username}
+                name="username"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 label="Email Address / Username"
                 inputProps={{}}
               />
-              {touched.email && errors.email && (
+              {touched.username && errors.username && (
                 <FormHelperText error id="standard-weight-helper-text-email-login">
-                  {errors.email}
+                  {errors.username}
                 </FormHelperText>
               )}
             </FormControl>
@@ -241,7 +238,7 @@ const FirebaseLogin = ({ ...others }) => {
 
             <Box sx={{ mt: 2 }}>
               <AnimateButton>
-                <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
+                <Button disableElevation disabled={isSubmitting} style={{backgroundColor:'#673ab7'}} fullWidth size="large" type="submit" variant="contained" color="secondary">
                   Sign in
                 </Button>
               </AnimateButton>
