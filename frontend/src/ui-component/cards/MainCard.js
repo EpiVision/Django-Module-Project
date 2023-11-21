@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { forwardRef } from 'react';
 
 // material-ui
+import Fab from '@mui/material/Fab';
 import { useTheme } from '@mui/material/styles';
 import { Card, CardContent, CardHeader, Divider, Typography } from '@mui/material';
 
@@ -23,6 +24,7 @@ const MainCard = forwardRef(
       contentSX = {},
       darkTitle,
       secondary,
+      secondaryPath,
       shadow,
       sx = {},
       title,
@@ -46,7 +48,19 @@ const MainCard = forwardRef(
         }}
       >
         {/* card header and action */}
-        {title && <CardHeader sx={headerSX} title={darkTitle ? <Typography variant="h3">{title}</Typography> : title} action={secondary} />}
+        {title && (
+          <CardHeader
+            sx={headerSX}
+            title={darkTitle ? <Typography variant="h3">{title}</Typography> : title}
+            action={
+              secondary && (
+              <Fab variant="extended" size="small" color="secondary" aria-label="add" href={secondaryPath}>
+                <Typography variant="button">{secondary}</Typography>
+              </Fab>
+              )
+            }
+          />
+        )}
 
         {/* content & header divider */}
         {title && <Divider />}

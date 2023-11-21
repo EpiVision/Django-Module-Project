@@ -39,6 +39,7 @@ import { baseURL } from 'utils/constants';
 
 // assets
 import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons';
+import { deleteAllCookies } from 'hooks/useCookies';
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -68,8 +69,8 @@ const ProfileSection = () => {
       if (response.status === 204) {
         localStorage.removeItem('user');
         localStorage.removeItem('token');
+        deleteAllCookies();
         window.location.replace('/');
-        
       } else {
         response.json().then((data) => {
           console.log(data);

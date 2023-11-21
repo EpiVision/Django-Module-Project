@@ -21,8 +21,17 @@ import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import { visuallyHidden } from '@mui/utils';
-
+import { baseURL } from 'utils/constants';
+import { useEffect } from 'react';
+import { set } from 'immutable';
+import { CustomizedSnackbars } from 'ui-component/Snackbar';
 function createData(name, username, ipaddress, rtspport, channel) {
   return {
     name,
@@ -30,14 +39,8 @@ function createData(name, username, ipaddress, rtspport, channel) {
     ipaddress,
     rtspport,
     channel
-    
   };
 }
-
-const rows = [
-  createData('HikVision', 'ali_', '192.168.10.9', '55011','2021' ),
-  
-];
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -50,9 +53,7 @@ function descendingComparator(a, b, orderBy) {
 }
 
 function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
+  return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
 // Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
@@ -73,40 +74,45 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: 'name',
+    id: 'deviceid',
+    numeric: true,
+    disablePadding: true,
+    label: 'Sr No.'
+  },
+  {
+    id: 'companyname',
     numeric: false,
     disablePadding: true,
-    label: 'Name',
+    label: 'Name'
   },
   {
     id: 'username',
     numeric: false,
     disablePadding: false,
-    label: 'Username',
+    label: 'Username'
   },
   {
-    id: 'ipAddress',
+    id: 'ipaddress',
     numeric: false,
     disablePadding: false,
-    label: 'IP Address',
+    label: 'IP Address'
   },
   {
-    id: 'rtspPort',
+    id: 'rtspport',
     numeric: false,
     disablePadding: false,
-    label: 'RTSP Port',
+    label: 'RTSP Port'
   },
   {
     id: 'channel',
     numeric: false,
     disablePadding: false,
-    label: 'Channel',
-  },
+    label: 'Channel'
+  }
 ];
 
 function EnhancedTableHead(props) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
-    props;
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -116,12 +122,12 @@ function EnhancedTableHead(props) {
       <TableRow>
         <TableCell padding="checkbox">
           <Checkbox
-            color="primary"
+            color="secondary"
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             inputProps={{
-              'aria-label': 'select all desserts',
+              'aria-label': 'select all devices'
             }}
           />
         </TableCell>
@@ -157,55 +163,113 @@ EnhancedTableHead.propTypes = {
   onSelectAllClick: PropTypes.func.isRequired,
   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
   orderBy: PropTypes.string.isRequired,
-  rowCount: PropTypes.number.isRequired,
+  rowCount: PropTypes.number.isRequired
 };
 
 function EnhancedTableToolbar(props) {
-  const { numSelected } = props;
+  const { numSelected, selected } = props;
+  const [open, setOpen] = React.useState(false);
+  const [snackbar, setSnackbar] = React.useState(false);
+  const [message, setMessage] = React.useState('Device deleted successfully');
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleYes = () => {
+    setOpen(false);
+    deleteSelected();
+  };
+
+  function deleteSelected() {
+    fetch(baseURL + '/device/', {
+      method: 'DELETE',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: 'Token ' + localStorage.getItem('token')
+      },
+      body: JSON.stringify({
+        deviceid: selected
+      })
+    }).then((response) => {
+      if (response.status === 200) {
+        response.json().then((data) => {
+          console.log(data);
+          setMessage(data.message);
+          setSnackbar(true);
+          window.location.replace('/Camera-Management/');
+          // if (data.status === 'success') {
+          //   // localStorage.setItem('token', data.token);
+          // }
+        });
+      } else {
+        response.json().then((data) => {
+          console.log(data);
+          setMessage(data.message);
+        });
+      }
+    });
+  }
   return (
     <Toolbar
       sx={{
         pl: { sm: 2 },
         pr: { xs: 1, sm: 1 },
         ...(numSelected > 0 && {
-          bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-        }),
+          bgcolor: (theme) => alpha(theme.palette.secondary.main, theme.palette.action.activatedOpacity)
+        })
       }}
     >
+      <CustomizedSnackbars
+        text={message}
+        severity="success"
+        open={snackbar}
+        handleClose={() => {
+          setSnackbar(false);
+        }}
+      />
+      <Dialog open={open} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+        <DialogTitle id="alert-dialog-title">{"Delete Selected devices?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete the selected devices?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button color='secondary' onClick={handleClose}>Cancel</Button>
+          <Button color='secondary' onClick={handleYes} autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+      
       {numSelected > 0 ? (
-        <Typography
-          sx={{ flex: '1 1 100%' }}
-          color="inherit"
-          variant="subtitle1"
-          component="div"
-        >
+        <Typography sx={{ flex: '1 1 100%' }} color="inherit" variant="subtitle1" component="div">
           {numSelected} selected
         </Typography>
       ) : (
-        <Typography
-          sx={{ flex: '1 1 100%' }}
-          variant="h6"
-          id="tableTitle"
-          component="div"
-        >
+        <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
           Camera Devices
         </Typography>
       )}
 
       {numSelected > 0 ? (
         <>
-        <Tooltip title="Delete">
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Edit">
-          <IconButton>
-            <EditIcon />
-          </IconButton>
-        </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton onClick={handleClickOpen}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Edit">
+            <IconButton>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
         </>
       ) : (
         <Tooltip title="Filter list">
@@ -220,8 +284,11 @@ function EnhancedTableToolbar(props) {
 
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
+  selected: PropTypes.array.isRequired
 };
 
+let rows = [];
+// const [rows, setRows] = React.useState([]);
 export default function EnhancedTable() {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
@@ -230,6 +297,35 @@ export default function EnhancedTable() {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+  useEffect(() => {
+    fetch(baseURL + '/device/', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: 'Token ' + localStorage.getItem('token')
+      }
+    }).then((response) => {
+      if (response.status === 200) {
+        response.json().then((data) => {
+          console.log(data);
+          rows = data.devices;
+          console.log('Rows in call: ', rows);
+          setOrderBy('deviceid');
+          // window.location.replace('/login/');
+          // if (data.status === 'success') {
+          //   // localStorage.setItem('token', data.token);
+          // }
+        });
+      } else {
+        response.json().then((data) => {
+          console.log(data);
+          alert(data.message);
+        });
+      }
+    });
+    console.log('Rows: ', rows);
+  }, [EnhancedTableToolbar]);
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -238,7 +334,7 @@ export default function EnhancedTable() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.name);
+      const newSelected = rows.map((n) => n.deviceid);
       setSelected(newSelected);
       return;
     }
@@ -256,13 +352,11 @@ export default function EnhancedTable() {
     } else if (selectedIndex === selected.length - 1) {
       newSelected = newSelected.concat(selected.slice(0, -1));
     } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
-      );
+      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
     }
 
     setSelected(newSelected);
+    console.log('Selected: ', newSelected, 'Index: ', selectedIndex, 'Name: ', name);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -281,28 +375,19 @@ export default function EnhancedTable() {
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   const visibleRows = React.useMemo(
-    () =>
-      stableSort(rows, getComparator(order, orderBy)).slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage,
-      ),
-    [order, orderBy, page, rowsPerPage],
+    () => stableSort(rows, getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+    [order, orderBy, page, rowsPerPage]
   );
 
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar numSelected={selected.length} selected={selected} />
         <TableContainer>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
-          >
+          <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={dense ? 'small' : 'medium'}>
             <EnhancedTableHead
               numSelected={selected.length}
               order={order}
@@ -313,48 +398,44 @@ export default function EnhancedTable() {
             />
             <TableBody>
               {visibleRows.map((row, index) => {
-                const isItemSelected = isSelected(row.name);
+                const isItemSelected = isSelected(row.deviceid);
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row.name)}
+                    onClick={(event) => handleClick(event, row.deviceid)}
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
-                    key={row.name}
+                    key={row.deviceid}
                     selected={isItemSelected}
                     sx={{ cursor: 'pointer' }}
                   >
                     <TableCell padding="checkbox">
                       <Checkbox
-                        color="primary"
+                        color="secondary"
                         checked={isItemSelected}
                         inputProps={{
-                          'aria-labelledby': labelId,
+                          'aria-labelledby': labelId
                         }}
                       />
                     </TableCell>
-                    <TableCell
-                      component="th"
-                      id={labelId}
-                      scope="row"
-                      padding="none"
-                    >
-                      {row.name}
+                    <TableCell component="th" id={labelId} scope="row" padding="none">
+                      {row.deviceid}
                     </TableCell>
+                    <TableCell align="right">{row.companyname}</TableCell>
                     <TableCell align="right">{row.username}</TableCell>
-                    <TableCell align="right">{row.ipAddress}</TableCell>
-                    <TableCell align="right">{row.rtspPort}</TableCell>
-                    <TableCell align="right">{row.channel   }</TableCell>
+                    <TableCell align="right">{row.ipaddress}</TableCell>
+                    <TableCell align="right">{row.rtspport}</TableCell>
+                    <TableCell align="right">{row.channel}</TableCell>
                   </TableRow>
                 );
               })}
               {emptyRows > 0 && (
                 <TableRow
                   style={{
-                    height: (dense ? 33 : 53) * emptyRows,
+                    height: (dense ? 33 : 53) * emptyRows
                   }}
                 >
                   <TableCell colSpan={6} />
@@ -373,10 +454,7 @@ export default function EnhancedTable() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      />
+      <FormControlLabel control={<Switch color="secondary" checked={dense} onChange={handleChangeDense} />} label="Dense padding" />
     </Box>
   );
 }

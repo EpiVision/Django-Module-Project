@@ -1,6 +1,6 @@
 // material-ui
 import { Typography } from '@mui/material';
-import Table from 'views/utilities/table.js'
+import Table from 'views/utilities/table.js';
 // project imports
 import MainCard from 'ui-component/cards/MainCard';
 import Button from '@mui/material/Button';
@@ -15,40 +15,25 @@ const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
   textAlign: 'center',
-  color: theme.palette.text.secondary,
+  color: theme.palette.text.secondary
 }));
 const CamerManagmentPage = () => (
   <>
-  <br></br>
-  <MainCard title="Camera Management">
-    
-      <Grid
-  container
-  direction="row"
-  justifyContent="space-evenly"
-  alignItems="center">
-  <Item>Gender</Item>
-  <Item>Phone Number</Item>
-  <Item>Height</Item>
-  <Item> 
-
-<Button variant="contained">Search  </Button>
-  </Item>
-
-
-</Grid>
-  </MainCard>
-<br></br>
-  <MainCard title="Camera Management">
-       <Fab variant="extended" size="small" color="primary" aria-label="add" >
-        {/* <NavigationIcon sx={{ mr: 1 }} /> */}
-       Add Device
-      </Fab>
-    
-     
-  <CameraTable/>
-  </MainCard>
-</>
+    {/* <MainCard title="Camera Management">
+      <Grid container direction="row" justifyContent="space-evenly" alignItems="center">
+        <Item>Gender</Item>
+        <Item>Phone Number</Item>
+        <Item>Height</Item>
+        <Item>
+          <Button variant="contained">Search </Button>
+        </Item>
+      </Grid>
+    </MainCard>
+    <br></br> */}
+    <MainCard title="Camera Management" secondary="Add device" secondaryPath="/Camera-Management/addcamera/">
+      <CameraTable />
+    </MainCard>
+  </>
 );
 
 export default CamerManagmentPage;

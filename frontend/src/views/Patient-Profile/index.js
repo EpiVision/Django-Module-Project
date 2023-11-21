@@ -8,7 +8,8 @@ import {
   InputAdornment,
   FormHelperText,
   InputLabel,
-  IconButton
+  IconButton,
+  MenuItem
 } from '@mui/material';
 import Table from 'views/utilities/table.js';
 import Visibility from '@mui/icons-material/Visibility';
@@ -27,6 +28,7 @@ import { get } from 'immutable';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { MuiTelInput } from 'mui-tel-input';
+import { useCookies } from 'react-cookie';
 // ==============================|| SAMPLE PAGE ||============================== //
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -37,18 +39,25 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const PatientProfilePage = () => {
+  const [cookies, setCookie] = useCookies(['patient']);
   const [patient, setPatient] = useState({
     id: -1,
     fullname: 'dummy',
     age: 0,
-    contact: '03xxxxxxxxx',
-    gender: null,
-    weight: null,
+    contact: '03123456789',
+    gender: 0,
+    weight: 0,
     userid: -1
   });
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
 
   function getPatientInfo() {
+    const patient = cookies.patient;
+    console.log(patient);
+    if (patient) {
+      setPatient(patient);
+      return;
+    }
     fetch(baseURL + '/profile/', {
       method: 'GET',
       headers: {
@@ -59,7 +68,7 @@ const PatientProfilePage = () => {
     }).then((response) => {
       if (response.status === 200) {
         response.json().then((data) => {
-          console.log(data);
+          setCookie('patient', JSON.stringify(data));
           setPatient(data);
         });
       } else {
@@ -72,14 +81,23 @@ const PatientProfilePage = () => {
 
   React.useEffect(() => {
     getPatientInfo();
-  }, []); // getPatientInfo
+  }, [patient]); // getPatientInfo
 
   const [showPassword, setShowPassword] = React.useState(false);
-  const [phone, setPhone] = useState('+92');
-
-  const handlePhoneChange = (value) => {
-    setPhone(value);
-  };
+  const genders = [
+    {
+      value: '0',
+      label: 'Rather not say'
+    },
+    {
+      value: '1',
+      label: 'Male'
+    },
+    {
+      value: '2',
+      label: 'Female'
+    }
+  ];
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -94,11 +112,16 @@ const PatientProfilePage = () => {
 
   const formik = useFormik({
     initialValues: {
-      email: 'foobar@example.com',
-      password: 'foobar'
+      email: user.email,
+      password: user.password,
+      weight: patient.weight,
+      age: patient.age,
+      contact: patient.contact,
+      gender: patient.gender
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
+      console.log('save btn');
       alert(JSON.stringify(values, null, 2));
     }
   });
@@ -168,6 +191,13 @@ const PatientProfilePage = () => {
                         </IconButton>
                       </InputAdornment>
                     }
+                    inputProps={{
+                      onChange: (e) => {
+                        formik.setFieldValue('password', e.target.value);
+                      },
+                      onBlur: formik.handleBlur,
+                      value: formik.values.password
+                    }}
                     label="Password"
                   />
                 </FormControl>
@@ -178,54 +208,82 @@ const PatientProfilePage = () => {
               <Grid item xs="12" sm={5}>
                 <TextField
                   label="Weight"
+                  name="weight"
+                  type="number"
                   id="outlined-start-adornment"
-                  aria-describedby="outlined-weight-helper-text"
                   sx={{ width: '100%' }}
                   InputProps={{
                     endAdornment: <InputAdornment position="start">kg</InputAdornment>,
+                    onChange: (e) => {
+                      formik.setFieldValue('weight', e.target.value);
+                    },
+                    onBlur: formik.handleBlur,
+                    value: formik.values.weight ? formik.values.weight : 0
                   }}
                 />
-                <FormHelperText id="outlined-weight-helper-text"><Typography variant='caption'>Required in kg</Typography></FormHelperText>
               </Grid>
               <Grid item xs="12" sm={5}>
                 <TextField
                   fullWidth
-                  id="password"
-                  name="password"
-                  label="Password"
-                  type="password"
-                  value={formik.values.password}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.password && Boolean(formik.errors.password)}
-                  helperText={formik.touched.password && formik.errors.password}
+                  type="number"
+                  required
+                  id="outlined-required"
+                  label="Age"
+                  defaultValue="Hello World"
+                  inputProps={{
+                    onChange: (e) => {
+                      formik.setFieldValue('age', e.target.value);
+                    },
+                    onBlur: formik.handleBlur,
+                    value: formik.values.age
+                  }}
                 />
               </Grid>
             </Grid>
 
             <Grid container marginBottom={3} direction="row" justifyContent="space-evenly" alignItems="center">
               <Grid item xs="12" sm={5}>
-              <MuiTelInput fullWidth value={phone} onChange={handlePhoneChange} />
+                <MuiTelInput
+                  fullWidth
+                  inputProps={{
+                    onChange: (e) => {
+                      formik.setFieldValue('contact', e.target.value);
+                    },
+                    onBlur: formik.handleBlur,
+                    value: formik.values.contact
+                  }}
+                  defaultCountry="pk"
+                  label="Phone Number"
+                />
               </Grid>
               <Grid item xs="12" sm={5}>
                 <TextField
                   fullWidth
-                  id="password"
-                  name="password"
-                  label="Password"
-                  type="password"
-                  value={formik.values.password}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.password && Boolean(formik.errors.password)}
-                  helperText={formik.touched.password && formik.errors.password}
-                />
+                  id="gender"
+                  select
+                  label="Gender"
+                  defaultValue="1"
+                  inputProps={{
+                    onChange: (e) => {
+                      formik.setFieldValue('gender', e.target.value);
+                    },
+                    onBlur: formik.handleBlur,
+                    value: formik.values.gender ? formik.values.gender : 0
+                  }}
+                >
+                  {genders.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
               </Grid>
             </Grid>
-
-            <Button color="primary" variant="contained" fullWidth type="submit">
-              Submit
-            </Button>
+            <Grid item xs="12" sm={5}>
+              <Button color="secondary" variant="contained" fullWidth type="submit">
+                <Typography variant="button">Save</Typography>
+              </Button>
+            </Grid>
           </Grid>
         </form>
       </MainCard>
