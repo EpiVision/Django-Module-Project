@@ -194,7 +194,7 @@ function EnhancedTableToolbar(props) {
         Authorization: 'Token ' + localStorage.getItem('token')
       },
       body: JSON.stringify({
-        deviceid: selected
+        deviceid: selected.deviceid
       })
     }).then((response) => {
       if (response.status === 200) {
@@ -214,6 +214,12 @@ function EnhancedTableToolbar(props) {
         });
       }
     });
+  }
+
+  const handleEditBtn = () => {
+    console.log('Selected: ', selected);
+    localStorage.setItem('selected', JSON.stringify(selected[0]));
+    window.location.replace('/Camera-Management/editcamera');
   }
   return (
     <Toolbar
@@ -266,7 +272,7 @@ function EnhancedTableToolbar(props) {
             </IconButton>
           </Tooltip>
           <Tooltip title="Edit">
-            <IconButton>
+            <IconButton onClick={handleEditBtn}>
               <EditIcon />
             </IconButton>
           </Tooltip>
@@ -398,17 +404,17 @@ export default function EnhancedTable() {
             />
             <TableBody>
               {visibleRows.map((row, index) => {
-                const isItemSelected = isSelected(row.deviceid);
+                const isItemSelected = isSelected(row);
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row.deviceid)}
+                    onClick={(event) => handleClick(event, row)}
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
-                    key={row.deviceid}
+                    key={row}
                     selected={isItemSelected}
                     sx={{ cursor: 'pointer' }}
                   >

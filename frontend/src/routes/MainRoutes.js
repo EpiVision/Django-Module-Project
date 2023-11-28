@@ -4,6 +4,7 @@ import { lazy } from 'react';
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
 import AddCamera from 'views/Camera-Management/addcamera';
+import EditCamera from 'views/Camera-Management/editcamera';
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
@@ -206,6 +207,10 @@ export const MainRoutes = {
     {
       path: 'Camera-Management/addcamera',
       element: <AddCamera />
+    },
+    {
+      path: 'Camera-Management/editcamera',
+      element: <EditCamera />
     },
     {
       path: 'Seizure-Analysis',

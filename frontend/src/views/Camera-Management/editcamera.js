@@ -19,6 +19,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import MainCard from 'ui-component/cards/MainCard';
 import { CustomizedSnackbars, SuccessSnackBar } from 'ui-component/Snackbar';
 import { baseURL } from 'utils/constants';
+import { useCookies } from 'react-cookie';
 import { set } from 'immutable';
 import { auto } from '@popperjs/core';
 import { func } from 'prop-types';
@@ -30,11 +31,11 @@ const initialValues = {
   ipAddress: '',
   rtspPort: '',
   channel: '',
-  accountId: '',
   deviceId: ''
 };
 
-const AddCamera = () => {
+const EditCamera = () => {
+  const [cookies, setCookie] = useCookies(['patient']);
   const [open, setOpen] = useState(false);
   const [openWarning, setOpenWarning] = useState(false);
   const [alertButton, setAlertButton] = useState(false);
@@ -45,6 +46,18 @@ const AddCamera = () => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+  useEffect(() => {
+    const device = JSON.parse(localStorage.getItem('selected'));
+    
+    initialValues.companyName = device.companyname;
+    initialValues.userName = device.username;
+    initialValues.password = device.password;
+    initialValues.ipAddress = device.ipaddress;
+    initialValues.rtspPort = device.rtspport;
+    initialValues.channel = device.channel;
+    initialValues.deviceId = device.deviceid;
+    console.log(initialValues);
+  }, []);
 
   // const handleClose = () => {
   //   setOpen(false);
@@ -68,7 +81,7 @@ const AddCamera = () => {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': 'Token '+localStorage.getItem('token')
+        Authorization: 'Token ' + localStorage.getItem('token')
       },
       body: JSON.stringify(values)
     }).then((response) => {
@@ -102,7 +115,7 @@ const AddCamera = () => {
   });
 
   return (
-    <MainCard title="Add Camera">
+    <MainCard title="Edit Camera">
       <CustomizedSnackbars
         text={'Device info is saved. Test stream to register device.'}
         severity="info"
@@ -151,7 +164,7 @@ const AddCamera = () => {
                 />
               </Grid>
               <Grid item sm={12}>
-                <FormControl sx={{ width: '100%',required:true }} variant="outlined" disabled={alertButton} required>
+                <FormControl sx={{ width: '100%', required: true }} variant="outlined" disabled={alertButton} required>
                   <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                   <OutlinedInput
                     id="outlined-adornment-password"
@@ -173,7 +186,7 @@ const AddCamera = () => {
                         formik.setFieldValue('password', e.target.value);
                       },
                       onBlur: formik.handleBlur,
-                      value: formik.values.password,
+                      value: formik.values.password
                     }}
                     label="Password"
                   />
@@ -230,7 +243,7 @@ const AddCamera = () => {
               fullWidth
               id="rtspPort"
               name="rtspPort"
-              type='number'
+              type="number"
               InputProps={{ inputProps: { min: 0 } }}
               value={formik.values.rtspPort}
               onChange={formik.handleChange}
@@ -245,7 +258,7 @@ const AddCamera = () => {
               fullWidth
               id="channel"
               name="channel"
-              type='number'
+              type="number"
               InputProps={{ inputProps: { min: 0 } }}
               value={formik.values.channel}
               onChange={formik.handleChange}
@@ -287,4 +300,4 @@ const AddCamera = () => {
   );
 };
 
-export default AddCamera;
+export default EditCamera;

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django_db_logger',
+    'logs', #new
     'OAUTH',
     'charts',
     'allauth',
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'rest_framework',
     'rest_framework.authtoken', #new
+    'drf_yasg',
     'corsheaders',
     'camera_management',
 ]

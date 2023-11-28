@@ -8,3 +8,7 @@ class GeneratedLogsSerializer(serializers.ModelSerializer):
         model = GeneratedLogs
         exclude = ['pat_id',]
         # fields = '__all__'
+
+class HorizontalBarChartSerializer(serializers.Serializer):
+    labels = serializers.ListField(child=serializers.CharField())
+    datasets = serializers.ListField(child=serializers.DictField())
