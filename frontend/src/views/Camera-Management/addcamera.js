@@ -16,12 +16,12 @@ import {
 } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import Arrow_forward from '@mui/icons-material/ArrowForward';
 import MainCard from 'ui-component/cards/MainCard';
-import { CustomizedSnackbars, SuccessSnackBar } from 'ui-component/Snackbar';
+import { CustomizedSnackbars } from 'ui-component/Snackbar';
 import { baseURL } from 'utils/constants';
-import { set } from 'immutable';
-import { auto } from '@popperjs/core';
-import { func } from 'prop-types';
+import { useNavigate} from "react-router-dom";
+import { Box } from '@mui/system';
 
 const initialValues = {
   companyName: '',
@@ -35,8 +35,7 @@ const initialValues = {
 };
 
 const AddCamera = () => {
-  const [open, setOpen] = useState(false);
-  const [openWarning, setOpenWarning] = useState(false);
+  let navigate = useNavigate();
   const [alertButton, setAlertButton] = useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -46,21 +45,9 @@ const AddCamera = () => {
     event.preventDefault();
   };
 
-  // const handleClose = () => {
-  //   setOpen(false);
-  // };
-  function handleClose(setOpen) {
-    setOpen(false);
-  }
-
   const videoRef = useRef();
   const [isReady, setReady] = useState(false);
-  function setRef() {
-    setReady(true);
-    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-      videoRef.current.srcObject = stream;
-    });
-  }
+  const [snackbar, setSnackbar] = useState({ text: '', severity: '', open: false, handleClose: null });
 
   const handleSubmit = (values) => {
     fetch(baseURL + '/device/', {
@@ -68,33 +55,67 @@ const AddCamera = () => {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': 'Token '+localStorage.getItem('token')
+        Authorization: 'Token ' + localStorage.getItem('token')
       },
       body: JSON.stringify(values)
     }).then((response) => {
       if (response.status === 201) {
         response.json().then((data) => {
-          console.log(data);
-          // window.location.replace('/login/');
-          // if (data.status === 'success') {
-          //   // localStorage.setItem('token', data.token);
-          // }
+          if (data != null) {
+            setSnackbar({
+              text: data.message,
+              severity: 'success',
+              open: true
+            });
+          }
         });
       } else if (response.status === 401) {
-        alert('You are not Unauthorized for this operation!');
+        setSnackbar({
+          text: 'You are not Unauthorized for this operation!',
+          severity: 'warning',
+          open: true
+        });
+      } else {
         response.json().then((data) => {
-          console.log(data);
-          alert(data.message);
+          if (data != null) {
+            setSnackbar({
+              text: 'Something went wrong! ' + response.status,
+              severity: 'warning',
+              open: true
+            });
+          }
         });
       }
     });
 
-    // setReady(true);
-    // setRef();
-    setOpen(true);
     setAlertButton(true);
-    console.log('Form submitted with values:', values);
   };
+
+  const [startStream, setStartStream] = useState(false);
+  function handleTestStream() {
+    setStartStream(!startStream);
+  }
+  useEffect(() => {
+    if (startStream) {
+      setReady(true);
+      navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+        videoRef.current.srcObject = stream;
+        console.log('test stream3', isReady);
+      });
+      console.log('values1', videoRef.current, videoRef.current);
+    } else {
+      console.log('values2', videoRef.current, videoRef.current);
+      if (videoRef.current != null) {
+        videoRef.current.srcObject.getTracks().forEach((track) => {
+          if (track.readyState == 'live' && track.kind === 'video') {
+            track.stop();
+          }
+          console.log('test stream4', isReady);
+        });
+        setReady(false);
+      }
+    }
+  }, [startStream]);
 
   const formik = useFormik({
     initialValues,
@@ -104,19 +125,12 @@ const AddCamera = () => {
   return (
     <MainCard title="Add Camera">
       <CustomizedSnackbars
-        text={'Device info is saved. Test stream to register device.'}
-        severity="info"
-        open={open}
+        autoHideDuration={3000}
+        text={snackbar.text}
+        severity={snackbar.severity}
+        open={snackbar.open}
         handleClose={() => {
-          handleClose(setOpen);
-        }}
-      />
-      <CustomizedSnackbars
-        text={'Please test stream to confirm camera registeration!'}
-        severity="warning"
-        open={openWarning}
-        handleClose={() => {
-          handleClose(setOpenWarning);
+          setSnackbar({ open: false });
         }}
       />
       <form onSubmit={formik.handleSubmit}>
@@ -151,7 +165,7 @@ const AddCamera = () => {
                 />
               </Grid>
               <Grid item sm={12}>
-                <FormControl sx={{ width: '100%',required:true }} variant="outlined" disabled={alertButton} required>
+                <FormControl sx={{ width: '100%', required: true }} variant="outlined" disabled={alertButton} required>
                   <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                   <OutlinedInput
                     id="outlined-adornment-password"
@@ -173,7 +187,7 @@ const AddCamera = () => {
                         formik.setFieldValue('password', e.target.value);
                       },
                       onBlur: formik.handleBlur,
-                      value: formik.values.password,
+                      value: formik.values.password
                     }}
                     label="Password"
                   />
@@ -217,9 +231,15 @@ const AddCamera = () => {
               </Card>
 
               <div style={{ width: window.screen.availWidth * 0.3, marginTop: 5 }}>
-                <Button fullWidth variant="contained" color="secondary" onClick={setRef}>
-                  Test Stream
-                </Button>
+                {!startStream ? (
+                  <Button fullWidth variant="contained" color="secondary" onClick={handleTestStream}>
+                    Test Stream
+                  </Button>
+                ) : (
+                  <Button fullWidth variant="contained" color="secondary" onClick={handleTestStream}>
+                    Stop Stream
+                  </Button>
+                )}
               </div>
             </Grid>
           </Grid>
@@ -230,7 +250,7 @@ const AddCamera = () => {
               fullWidth
               id="rtspPort"
               name="rtspPort"
-              type='number'
+              type="number"
               InputProps={{ inputProps: { min: 0 } }}
               value={formik.values.rtspPort}
               onChange={formik.handleChange}
@@ -245,7 +265,7 @@ const AddCamera = () => {
               fullWidth
               id="channel"
               name="channel"
-              type='number'
+              type="number"
               InputProps={{ inputProps: { min: 0 } }}
               value={formik.values.channel}
               onChange={formik.handleChange}
@@ -254,34 +274,56 @@ const AddCamera = () => {
             />
           </Grid>
         </Grid>
-        <Grid marginTop={3}>
-          {!alertButton ? (
-            <Button type="submit" variant="contained" color="secondary">
-              Save
-            </Button>
-          ) : (
+        <Box sx={{ flexGrow: 1 }}>
+        <Grid container justifyContent={'space-between'} direction={'row'} marginTop={3}>
+          <Grid item >
+            {!alertButton ? (
+              <Button type="submit" variant="contained" color="secondary">
+                Save
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => {
+                  setSnackbar({
+                    text: 'Please test stream to confirm the changes!',
+                    severity: 'info',
+                    open: true
+                  });
+                }}
+              >
+                Saved
+              </Button>
+            )}
+
+            {'  '}
+
             <Button
               variant="contained"
               color="secondary"
               onClick={() => {
-                setOpenWarning(true);
+                setAlertButton(false);
               }}
             >
-              Save
+              <Typography variant="button"> Edit</Typography>
             </Button>
-          )}
-          {'  '}
-
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => {
-              setAlertButton(false);
-            }}
-          >
-            <Typography variant="button"> Edit</Typography>
-          </Button>
+          </Grid>
+          <Grid item >
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => {
+                navigate(-1);
+              }}
+              endIcon={<Arrow_forward />}
+              disabled={!alertButton}
+            >
+              <Typography variant="button"> Continue </Typography>
+            </Button>
+          </Grid>
         </Grid>
+        </Box>
       </form>
     </MainCard>
   );

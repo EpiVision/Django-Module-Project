@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from .models import Patient
+from modeldb.models import Patient
 
 from rest_framework import serializers
 

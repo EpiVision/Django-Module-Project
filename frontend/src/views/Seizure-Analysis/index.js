@@ -6,7 +6,8 @@ import MainCard from 'ui-component/cards/MainCard';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
-const ActivityLogsPage = () => (
+const ActivityLogsPage = () => {
+  return (
   <>
   <br></br>
   <MainCard title="Seizure Analysis">
@@ -14,7 +15,7 @@ const ActivityLogsPage = () => (
      
   <Table/>
   </MainCard>
-</>
-);
+</>)
+};
 
 export default ActivityLogsPage;

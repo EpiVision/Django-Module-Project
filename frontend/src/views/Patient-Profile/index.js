@@ -39,6 +39,12 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const PatientProfilePage = () => {
+  if (localStorage.getItem('user') === null) {
+    window.location.href = '/login';
+  } 
+  // else {
+  //   window.location.href = '/dashboard';
+  // }
   const [cookies, setCookie] = useCookies(['patient']);
   const [patient, setPatient] = useState({
     id: -1,

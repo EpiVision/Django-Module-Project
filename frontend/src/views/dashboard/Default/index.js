@@ -4,17 +4,18 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, Grid } from '@mui/material';
 
 // project imports
-import EarningCard from './EarningCard';
-import PopularCard from './PopularCard';
-import TotalOrderLineChartCard from './TotalOrderLineChartCard';
-import TotalIncomeDarkCard from './TotalIncomeDarkCard';
-import TotalIncomeLightCard from './TotalIncomeLightCard';
-import TotalGrowthBarChart from './TotalGrowthBarChart';
+// import EarningCard from './EarningCard';
+// import PopularCard from './PopularCard';
+// import TotalOrderLineChartCard from './TotalOrderLineChartCard';
+// import TotalIncomeDarkCard from './TotalIncomeDarkCard';
+// import TotalIncomeLightCard from './TotalIncomeLightCard';
+// import TotalGrowthBarChart from './TotalGrowthBarChart';
 import { gridSpacing } from 'store/constant';
 import { PieChart } from './PieChart.tsx';
 import { BarChart } from './HorizontalBarChart.tsx';
-import {VerticalBarChart} from './VerticalBarChart.tsx';
+import { VerticalBarChart } from './VerticalBarChart.tsx';
 import { LineChart } from './LineChart.tsx';
+import { baseURL, getBgColors, getSolidColors } from 'utils/constants';
 // ==============================|| DEFAULT DASHBOARD ||============================== //
 
 const Dashboard = () => {
@@ -22,13 +23,18 @@ const Dashboard = () => {
   useEffect(() => {
     setLoading(false);
   }, []);
+  if (localStorage.getItem('user') === null) {
+    window.location.href = '/login';
+  } else {
+    // window.location.href = '/dashboard';
+  }
 
   return (
     <Grid container spacing={gridSpacing}>
       <Grid item xs={12}>
         <Card>
-          <CardContent style={{height:360}} >
-            <BarChart />
+          <CardContent style={{ height: 360 }}>
+            <LineChart />
           </CardContent>
         </Card>
       </Grid>
@@ -36,21 +42,19 @@ const Dashboard = () => {
         <Grid container spacing={gridSpacing}>
           <Grid item sm={6} xs={12} md={6} lg={4}>
             <Card>
-              <CardContent style={{height:360}}>
-                <PieChart />
-              </CardContent>
+              <CardContent style={{ height: 360 }}>{/* <PieChart /> */}</CardContent>
             </Card>
           </Grid>
           <Grid item sm={6} xs={12} md={6} lg={4}>
             <Card>
-              <CardContent style={{height:360}}>
+              <CardContent style={{ height: 360 }}>
                 <VerticalBarChart />
               </CardContent>
             </Card>
           </Grid>
           <Grid item sm={6} xs={12} md={6} lg={4}>
             <Card>
-              <CardContent style={{height:360}}>
+              <CardContent style={{ height: 360 }}>
                 <LineChart />
               </CardContent>
             </Card>

@@ -24,13 +24,13 @@ export function SuccessSnackBar() {
   </Snackbar>;
 }
 
-export function CustomizedSnackbars({ text, severity, open, handleClose }) {
+export function CustomizedSnackbars({ text, severity, open, autoHideDuration, handleClose }) {
   const vertical = 'bottom';
   const horizontal = 'right';
   return (
     <Stack spacing={2} sx={{ width: '100%' }}>
-      <Snackbar anchorOrigin={{ vertical, horizontal }} open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
+      <Snackbar anchorOrigin={{ vertical, horizontal }} open={open} autoHideDuration={autoHideDuration} onClose={handleClose}>
+        <Alert onClose={handleClose}  severity={severity} sx={{ width: '100%' }}>
           {text}
         </Alert>
       </Snackbar>

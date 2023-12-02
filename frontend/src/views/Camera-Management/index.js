@@ -17,23 +17,20 @@ const Item = styled(Paper)(({ theme }) => ({
   textAlign: 'center',
   color: theme.palette.text.secondary
 }));
-const CamerManagmentPage = () => (
-  <>
-    {/* <MainCard title="Camera Management">
-      <Grid container direction="row" justifyContent="space-evenly" alignItems="center">
-        <Item>Gender</Item>
-        <Item>Phone Number</Item>
-        <Item>Height</Item>
-        <Item>
-          <Button variant="contained">Search </Button>
-        </Item>
-      </Grid>
-    </MainCard>
-    <br></br> */}
-    <MainCard title="Camera Management" secondary="Add device" secondaryPath="/Camera-Management/addcamera/">
-      <CameraTable />
-    </MainCard>
-  </>
-);
+
+const CamerManagmentPage = () => {
+  if (localStorage.getItem('user') === null) {
+    window.location.href = '/login';
+  } else {
+  //   window.location.href = '/dashboard';
+  }
+  return (
+    <>
+      <MainCard title="Camera Management" secondary="Add device" secondaryPath="/Camera-Management/addcamera/">
+        <CameraTable />
+      </MainCard>
+    </>
+  );
+};
 
 export default CamerManagmentPage;

@@ -169,8 +169,7 @@ EnhancedTableHead.propTypes = {
 function EnhancedTableToolbar(props) {
   const { numSelected, selected } = props;
   const [open, setOpen] = React.useState(false);
-  const [snackbar, setSnackbar] = React.useState(false);
-  const [message, setMessage] = React.useState('Device deleted successfully');
+  const [snackbar, setSnackbar] = React.useState({ text: '', severity: '', open: false, handleClose: null });
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -186,31 +185,39 @@ function EnhancedTableToolbar(props) {
   };
 
   function deleteSelected() {
+    let sel = selected.map((s) => s.deviceid);
+    console.log('Selected: ', selected);
     fetch(baseURL + '/device/', {
       method: 'DELETE',
       headers: {
-        Accept: 'application/json',
+        'Accept': 'application/json',
         'Content-Type': 'application/json',
-        Authorization: 'Token ' + localStorage.getItem('token')
+        'Authorization': 'Token ' + localStorage.getItem('token')
       },
-      body: JSON.stringify({
-        deviceid: selected.deviceid
-      })
+      body: JSON.stringify({deviceid: sel})
     }).then((response) => {
       if (response.status === 200) {
         response.json().then((data) => {
-          console.log(data);
-          setMessage(data.message);
-          setSnackbar(true);
+          // console.log(data);
+          // setMessage(data.message);
+          // setSnackbar(true);
           window.location.replace('/Camera-Management/');
+          setSnackbar({
+            text: data.message,
+            severity: 'success',
+            open: true
+          });
           // if (data.status === 'success') {
           //   // localStorage.setItem('token', data.token);
           // }
         });
       } else {
         response.json().then((data) => {
-          console.log(data);
-          setMessage(data.message);
+          setSnackbar({
+            text: data.message == null ? response.status +", "+response.statusText : data.message,
+            severity: 'error',
+            open: true
+          });
         });
       }
     });
@@ -232,13 +239,15 @@ function EnhancedTableToolbar(props) {
       }}
     >
       <CustomizedSnackbars
-        text={message}
-        severity="success"
-        open={snackbar}
+        autoHideDuration={3000}
+        text={snackbar.text}
+        severity={snackbar.severity}
+        open={snackbar.open}
         handleClose={() => {
-          setSnackbar(false);
+          setSnackbar({ open: false });
         }}
       />
+      
       <Dialog open={open} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
         <DialogTitle id="alert-dialog-title">{"Delete Selected devices?"}</DialogTitle>
         <DialogContent>

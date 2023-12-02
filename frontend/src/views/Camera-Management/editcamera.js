@@ -16,13 +16,12 @@ import {
 } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import Arrow_forward from '@mui/icons-material/ArrowForward';
 import MainCard from 'ui-component/cards/MainCard';
 import { CustomizedSnackbars, SuccessSnackBar } from 'ui-component/Snackbar';
 import { baseURL } from 'utils/constants';
-import { useCookies } from 'react-cookie';
-import { set } from 'immutable';
-import { auto } from '@popperjs/core';
-import { func } from 'prop-types';
+import { Box } from '@mui/system';
+import { useNavigate} from "react-router-dom"
 
 const initialValues = {
   companyName: '',
@@ -35,9 +34,7 @@ const initialValues = {
 };
 
 const EditCamera = () => {
-  const [cookies, setCookie] = useCookies(['patient']);
-  const [open, setOpen] = useState(false);
-  const [openWarning, setOpenWarning] = useState(false);
+  let navigate = useNavigate();
   const [alertButton, setAlertButton] = useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -48,7 +45,7 @@ const EditCamera = () => {
   };
   useEffect(() => {
     const device = JSON.parse(localStorage.getItem('selected'));
-    
+
     initialValues.companyName = device.companyname;
     initialValues.userName = device.username;
     initialValues.password = device.password;
@@ -59,25 +56,13 @@ const EditCamera = () => {
     console.log(initialValues);
   }, []);
 
-  // const handleClose = () => {
-  //   setOpen(false);
-  // };
-  function handleClose(setOpen) {
-    setOpen(false);
-  }
-
   const videoRef = useRef();
   const [isReady, setReady] = useState(false);
-  function setRef() {
-    setReady(true);
-    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-      videoRef.current.srcObject = stream;
-    });
-  }
+  const [snackbar, setSnackbar] = useState({ text: '', severity: '', open: false, handleClose: null });
 
   const handleSubmit = (values) => {
     fetch(baseURL + '/device/', {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
@@ -85,29 +70,83 @@ const EditCamera = () => {
       },
       body: JSON.stringify(values)
     }).then((response) => {
-      if (response.status === 201) {
+      if (response.status === 200) {
         response.json().then((data) => {
-          console.log(data);
-          // window.location.replace('/login/');
-          // if (data.status === 'success') {
-          //   // localStorage.setItem('token', data.token);
-          // }
+          // check if data is not null
+          if (data != null) {
+            console.log(data);
+            localStorage.setItem('selected', JSON.stringify(data));
+            setSnackbar({
+              text: 'Device details are updated! Please test stream to confirm the changes',
+              severity: 'success',
+              open: true
+            });
+          }
         });
       } else if (response.status === 401) {
+        setSnackbar({
+          text: 'You are not Unauthorized for this operation!',
+          severity: 'warning',
+          open: true
+        });
+      }
+      else if (response.status === 400) {
         alert('You are not Unauthorized for this operation!');
         response.json().then((data) => {
-          console.log(data);
-          alert(data.message);
+          // check if data is not null
+          if (data != null) {
+            setSnackbar({
+              text: data.message,
+              severity: 'error',
+              open: true
+            });
+          }
+        });
+      } else {
+        response.json().then((data) => {
+          if (data != null) {
+            setSnackbar({
+              text: data.message,
+              severity: 'error',
+              open: true
+            });
+          } else {
+            setSnackbar({
+              text: 'Device details are not updated! Please try again',
+              severity: 'error',
+              open: true
+            });
+          }
         });
       }
     });
 
-    // setReady(true);
-    // setRef();
-    setOpen(true);
     setAlertButton(true);
-    console.log('Form submitted with values:', values);
   };
+
+  const [startStream, setStartStream] = useState(false);
+  function handleTestStream() {
+    setStartStream(!startStream);
+  }
+  useEffect(() => {
+    if (startStream) {
+      setReady(true);
+      navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+        videoRef.current.srcObject = stream;
+      });
+      console.log('values1', videoRef.current, videoRef.current);
+    } else {
+      console.log('values2', videoRef.current, videoRef.current);
+      if (videoRef.current != null) {
+        videoRef.current.srcObject.getTracks().forEach((track) => {
+          if (track.readyState == 'live' && track.kind === 'video') {
+            track.stop();
+          }
+        });
+        setReady(false);
+      }
+    }
+  }, [startStream]);
 
   const formik = useFormik({
     initialValues,
@@ -117,19 +156,12 @@ const EditCamera = () => {
   return (
     <MainCard title="Edit Camera">
       <CustomizedSnackbars
-        text={'Device info is saved. Test stream to register device.'}
-        severity="info"
-        open={open}
+        autoHideDuration={3000}
+        text={snackbar.text}
+        severity={snackbar.severity}
+        open={snackbar.open}
         handleClose={() => {
-          handleClose(setOpen);
-        }}
-      />
-      <CustomizedSnackbars
-        text={'Please test stream to confirm camera registeration!'}
-        severity="warning"
-        open={openWarning}
-        handleClose={() => {
-          handleClose(setOpenWarning);
+          setSnackbar({ open: false });
         }}
       />
       <form onSubmit={formik.handleSubmit}>
@@ -230,9 +262,15 @@ const EditCamera = () => {
               </Card>
 
               <div style={{ width: window.screen.availWidth * 0.3, marginTop: 5 }}>
-                <Button fullWidth variant="contained" color="secondary" onClick={setRef}>
-                  Test Stream
-                </Button>
+                {!startStream ? (
+                  <Button fullWidth variant="contained" color="secondary" onClick={handleTestStream}>
+                    Test Stream
+                  </Button>
+                ) : (
+                  <Button fullWidth variant="contained" color="secondary" onClick={handleTestStream}>
+                    Stop Stream
+                  </Button>
+                )}
               </div>
             </Grid>
           </Grid>
@@ -267,34 +305,56 @@ const EditCamera = () => {
             />
           </Grid>
         </Grid>
-        <Grid marginTop={3}>
-          {!alertButton ? (
-            <Button type="submit" variant="contained" color="secondary">
-              Save
-            </Button>
-          ) : (
+        <Box sx={{ flexGrow: 1 }}>
+        <Grid container justifyContent={'space-between'} direction={'row'} marginTop={3}>
+          <Grid item >
+            {!alertButton ? (
+              <Button type="submit" variant="contained" color="secondary">
+                Save
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => {
+                  setSnackbar({
+                    text: 'Please test stream to confirm the changes!',
+                    severity: 'info',
+                    open: true
+                  });
+                }}
+              >
+                Saved
+              </Button>
+            )}
+
+            {'  '}
+
             <Button
               variant="contained"
               color="secondary"
               onClick={() => {
-                setOpenWarning(true);
+                setAlertButton(false);
               }}
             >
-              Save
+              <Typography variant="button"> Edit</Typography>
             </Button>
-          )}
-          {'  '}
-
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => {
-              setAlertButton(false);
-            }}
-          >
-            <Typography variant="button"> Edit</Typography>
-          </Button>
+          </Grid>
+          <Grid item >
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => {
+                window.location.href = '/Camera-Management';
+              }}
+              endIcon={<Arrow_forward />}
+              disabled={!alertButton}
+            >
+              <Typography variant="button"> Continue </Typography>
+            </Button>
+          </Grid>
         </Grid>
+        </Box>
       </form>
     </MainCard>
   );

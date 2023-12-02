@@ -38,22 +38,22 @@ export function PieChart() {
       },
     ],});
   const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    const apiUrl = baseURL+'/getHorizontalBarChart/';
+  // useEffect(() => {
+  //   const apiUrl = baseURL+'/getHorizontalBarChart/';
     
-    setLoading(true);
-    fetch(apiUrl)
-      .then(response => response.json())
-      .then(data1 => {
-        console.log('This is your data', data1);
-        setData(data1);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      });
-  }, []);
+  //   setLoading(true);
+  //   fetch(apiUrl)
+  //     .then(response => response.json())
+  //     .then(data1 => {
+  //       console.log('This is your data', data1);
+  //       setData(data1);
+  //       setLoading(false);
+  //     })
+  //     .catch(error => {
+  //       console.error('Error fetching data:', error);
+  //       setLoading(false);
+  //     });
+  // }, []);
 
   // get count of each activity 
   // const acts = countElements(data1.map((item: any) => item));

@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework import views
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from .models import Patient
+from modeldb.models import Patient
 
 # from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 # from allauth.socialaccount.providers.oauth2.client import OAuth2Client

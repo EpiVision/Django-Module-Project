@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'logs', #new
     'OAUTH',
     'charts',
+    'modeldb',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
