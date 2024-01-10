@@ -1,0 +1,7 @@
+sudo apt-get update (Update Ubunto)
+sudo apt install python3-pip -y (for python installation)
+ls -lrt (See project is installed or not, name would be shown)
+pip install django-allauth (install allauth)
+pip install oauth2_provider
+pip install django-rest_framework
+ 
