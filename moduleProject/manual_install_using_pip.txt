@@ -1,0 +1,8 @@
+django
+django_db_logger
+oauth2_provider
+djangorestframework
+django-cors-headers
+mssql-django
+django-oauth-toolkit
+django-rest-auth
