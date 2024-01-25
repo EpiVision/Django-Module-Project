@@ -1,0 +1,7 @@
+sudo apt-get update 
+sudo apt install python3-pip -y 
+pip install django-allauth
+pip install oauth2_provider
+pip install django-rest_framework
+pip install Django==4.2.2
+pip install djangorestframework==3.14.0
