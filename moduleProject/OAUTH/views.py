@@ -1,6 +1,6 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
-
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
@@ -8,7 +8,7 @@ from rest_framework import views
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from modeldb.models import Patient
-
+from moduleProject.utils import get_header_params
 # from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 # from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 # from dj_rest_auth.registration.views import SocialLoginView
@@ -36,7 +36,8 @@ from . import serializers
 class LoginView(views.APIView):
     # This view should be accessible also for unauthenticated users.
     permission_classes = (permissions.AllowAny,)
-
+    
+    @swagger_auto_schema(operation_description="Login",request_body=serializers.LoginSerializer,responses={202:serializers.LoginResponse})
     def post(self, request, format=None):
         serializer = serializers.LoginSerializer(data=self.request.data, context={ 'request': self.request })
         serializer.is_valid(raise_exception=True)
@@ -52,6 +53,7 @@ class RegisterView(views.APIView):
     permission_classes = (permissions.AllowAny,)
     csrf_exempt = True
 
+    @swagger_auto_schema(operation_description="Create new account", responses={201:serializers.RegisterResponse, 400:serializers.RegisterErrorResponse})
     def post(self, request):
         first_name = self.request.data['fname']
         last_name = self.request.data['lname']
@@ -71,6 +73,7 @@ class RegisterView(views.APIView):
 
 class LogoutView(views.APIView):
 
+    @swagger_auto_schema(operation_description="Logout from account",manual_parameters=get_header_params(),responses={204:None})
     def post(self, request, format=None):
         logout(request)
         return Response(None, status=status.HTTP_204_NO_CONTENT)

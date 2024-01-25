@@ -56,3 +56,16 @@ class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient
         fields = '__all__'
+    
+class LoginResponse(serializers.Serializer):
+    token = serializers.CharField()
+    user = UserSerializer
+    
+class RegisterResponse(serializers.Serializer):
+    message = 'User created successfully!'
+    
+class RegisterErrorResponse(serializers.Serializer):
+    message = 'Email is already registered!'
+    
+    
+    

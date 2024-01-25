@@ -1,102 +1,53 @@
 import React from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
-import { baseURL } from 'utils/constants';
-import { useState, useEffect } from 'react';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
-// call api to get data from http://127.0.0.1:8000/getActivities/
 
-type ChartData = {
-  labels: string[];
-  datasets: {
-    label: string;
-    data: number[];
-    backgroundColor: string[];
-    borderColor: string[];
-    borderWidth: number;
-  }[];
+const options = {
+  maintainAspectRatio: true,
+  responsive: true,
+  plugins: {
+    legend: {
+      display: false,
+    },
+    // legend: {
+    //   position: 'right' as const,
+    // },
+    title: {
+      display: true,
+      text: '',
+    },
+  },
 };
 
-function countElements(arr: any[]) {
-  const count: {[key: string]: number} = {};
-  arr.forEach((element:any) => {
-    count[element.toLowerCase()] = (count[element.toLowerCase()] || 0) + 1;
-  });
-  return count;
-}
+const data = {
+  labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+  datasets: [
+    {
+      label: '# of Votes',
+      data: [12, 19, 3, 5, 2, 3],
+      backgroundColor: [
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(255, 159, 64, 0.2)',
+      ],
+      borderColor: [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)',
+      ],
+      borderWidth: 1,
+    },
+  ],
+};
 
 export function PieChart() {
-  const [data1, setData] = useState<ChartData>({labels: [],
-    datasets: [
-      {
-        label: '',
-        data: [],
-        backgroundColor: [],
-        borderColor: [],
-        borderWidth: 1,
-      },
-    ],});
-  const [loading, setLoading] = useState(true);
-  // useEffect(() => {
-  //   const apiUrl = baseURL+'/getHorizontalBarChart/';
-    
-  //   setLoading(true);
-  //   fetch(apiUrl)
-  //     .then(response => response.json())
-  //     .then(data1 => {
-  //       console.log('This is your data', data1);
-  //       setData(data1);
-  //       setLoading(false);
-  //     })
-  //     .catch(error => {
-  //       console.error('Error fetching data:', error);
-  //       setLoading(false);
-  //     });
-  // }, []);
-
-  // get count of each activity 
-  // const acts = countElements(data1.map((item: any) => item));
-  // console.log('This is acts',acts)
-  
-  // const data = {
-  //   labels: Object.keys(acts),
-  //   datasets: [
-  //     {
-  //       label: '# of Activities',
-  //       data: Object.values(acts),
-  //       backgroundColor: backgroundColor.slice(0, Object.keys(acts).length),
-  //       borderColor: borderColor.slice(0, Object.keys(acts).length),
-  //       borderWidth: 1,
-  //     },
-  //   ],
-  // };
-
-  const options = {
-    maintainAspectRatio: true,
-    responsive: true,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      // legend: {
-      //   position: 'right' as const,
-      // },
-      title: {
-        display: true,
-        text: 'Food Chart',
-      },
-    },
-  };
-
-  const divStyle = {
-    height: '400px',
-    width: '400px',
-    padding: '20px',
-    border: '1px solid blue',
-  };
-  return <div>
-      <Pie options={options} data={data1} />
-  </div>
+  return <Pie data={data} options={options}/>;
 }
-export default PieChart;

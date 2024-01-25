@@ -42,7 +42,9 @@ const Dashboard = () => {
         <Grid container spacing={gridSpacing}>
           <Grid item sm={6} xs={12} md={6} lg={4}>
             <Card>
-              <CardContent style={{ height: 360 }}>{/* <PieChart /> */}</CardContent>
+              <CardContent style={{ height: 360 }}>
+                <PieChart />
+              </CardContent>
             </Card>
           </Grid>
           <Grid item sm={6} xs={12} md={6} lg={4}>
@@ -55,7 +57,7 @@ const Dashboard = () => {
           <Grid item sm={6} xs={12} md={6} lg={4}>
             <Card>
               <CardContent style={{ height: 360 }}>
-                <LineChart />
+                <BarChart />
               </CardContent>
             </Card>
           </Grid>
