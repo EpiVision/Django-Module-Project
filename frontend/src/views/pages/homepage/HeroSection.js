@@ -1,44 +1,61 @@
-import { Insights } from "@mui/icons-material"
-import styles from "../../../../src/style.js"
-// import { discount, robot } from "../assets"
-// import GetStarted from "./GetStarted"
-import bedroom from '../../../assets/images/bedroom.png'
-import { Button } from "@mui/material"
-
+import bedroom from '../../../assets/images/bedroom.png';
+import { Button, Typography, Grid } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 const HeroSection = () => {
-    return (
-        <section id="home"  >
-            <div class="m-10 grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-y-12">
-                    <div className="mt-12 ">
-                        <span className="text-7xl font-medium font-['Roboto']">Make a
-                            <span className="text-blue-700"> difference </span>
 
-                            in </span>
-                        <br />
-                        <span className="text-7xl font-medium font-['Roboto']">the lives of others</span>
-                    </div>
-                    <div>
-                        <div className="w-96 h-20 text-slate-600 text-2xl font-medium font-['Montserrat'] ">
-                            Bringing a stronger sense of ease, confidence, and self-mastery to those who are living with epilepsy.
-                        </div>
-                    </div>
-                    <div className="flex flex-row mt-12">
-                        <div>
-                            <Button className="hover:none bg-indigo-800 text-white p-3"> Get Started</Button>
-                        </div>
-                        <div>  <Button className="bg-white text-indigo p-3"> Watch Video</Button></div>
-                    </div>
-                </div>
+  const navigate = useNavigate();
+  const navigateLogin = () => {
+    navigate('/login');
+  };
 
-                <div >
-                    <img src={bedroom} className="w-[20]">
-                    </img>
-                </div>
+  return (
+    <section id="home">
+      <Grid container spacing={4}>
+        <Grid item xs={12} sm={6}>
+          <Grid container direction="column" alignContent="space-around" sx={{ gap: '12px', padding: '120px' }}>
+            <div style={{ mt: 12 }}>
+              <Typography variant="h3" sx={{ fontFamily: 'Roboto', fontSize: '2.7rem', fontWeight: 'medium' }}>
+                Make a <span style={{ color: '#4E3AB0' }}>difference</span> in
+              </Typography>
+              <Typography variant="h3" sx={{ fontFamily: 'Roboto', fontSize: '2.7rem', fontWeight: 'medium' }}>
+                the lives of others
+              </Typography>
             </div>
-        </section >
-    )
+            <div>
+              <Typography
+                variant="body1"
+                sx={{ width: 288, color: '#718096', fontSize: '2xl', fontWeight: 'medium', fontFamily: 'Roboto' }}
+              >
+                Bringing a stronger sense of ease, confidence, and self-mastery to those who are living with epilepsy.
+              </Typography>
+            </div>
+            <div style={{ height: '12px' }}></div>
+            <div style={{ mt: 12, display: 'flex', flexDirection: 'row' }}>
+              <div>
+                <Button
+                  variant="contained"
+                  sx={{ backgroundColor: '#4E3AB0', ':hover': { backgroundColor: '#3d2d8c' } }}
+                  onClick={navigateLogin}
+                >
+                  Get Started
+                </Button>
+              </div>
+              {/* gap between buttons*/}
+              <div style={{ width: 12 }}></div>
+              <div>
+                <Button variant="outlined" sx={{ color: '#4E3AB0' }}>
+                  Watch Video
+                </Button>
+              </div>
+            </div>
+          </Grid>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <img src={bedroom} alt="Bedroom" style={{ width: '35rem' }} />
+        </Grid>
+      </Grid>
+    </section>
+  );
+};
 
-}
-
-export default HeroSection
+export default HeroSection;

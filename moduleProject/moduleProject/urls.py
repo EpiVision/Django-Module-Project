@@ -47,6 +47,7 @@ urlpatterns = [
     path('', include('OAUTH.urls')),
     path('', include('charts.urls')),
     path('', include('camera_management.urls')),
+    path('', include('alarm_module.urls')),
     # path('', views.index),
     path('', TemplateView.as_view(template_name="index.html")),
     # path('accounts/login/', LoginView.as_view(), name='account_login'),

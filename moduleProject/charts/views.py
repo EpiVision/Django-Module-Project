@@ -56,6 +56,7 @@ class ActivityTrend(views.APIView):
 
         # Convert the dictionary values to a list
         result_list = list(activities.values())
+        
         # Serialize the data
         serialized_data = serializers.ActivitySerializer(result_list, many=True)
         # Access the serialized data as a dictionary

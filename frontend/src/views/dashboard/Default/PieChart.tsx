@@ -16,7 +16,7 @@ const options = {
     // },
     title: {
       display: true,
-      text: '',
+      text: 'Activity Frequency',
     },
   },
 };

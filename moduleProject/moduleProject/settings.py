@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'corsheaders',
     'camera_management',
+    'alarm_module'
 ]
 
 MIDDLEWARE = [

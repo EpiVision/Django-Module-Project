@@ -1,43 +1,31 @@
-import React from 'react'
-import arrows from '../../../assets/images/arrows.svg'
-import sol1 from '../../../assets/images/sol-1.png'
-import sol2 from '../../../assets/images/sol-2.png'
-import sol3 from '../../../assets/images/sol-3.png'
-import sol4 from '../../../assets/images/sol-4.svg'
+// import React from 'react'
+import { Typography, Grid } from '@mui/material';
+import arrows from '../../../assets/images/arrows.svg';
+import sol1 from '../../../assets/images/sol-1.png';
+import sol2 from '../../../assets/images/sol-2.png';
+import sol3 from '../../../assets/images/sol-3.png';
+import sol4 from '../../../assets/images/sol-4.svg';
+import BasicCard from 'ui-component/cards/HomeCard';
+import {SolutionCard} from 'ui-component/cards/HomeCard';
+
 const Solutions = () => {
-    return (
-        <section className='flex flex-col'>
-            <div className='flex justify-center'>
-                <img src={arrows}></img>
-            </div>
-            <div className=" flex justify-center text-indigo-800 text-xl font-medium font-['Roboto'] leading-normal">Hassel free solution</div>
-            <div className="mt-8 flex justify-center text-slate-800 text-6xl font-bold font-['Roboto'] leading-10">Easy steps for your solution</div>
-            <div className='mt-10 flex flex-col sm:flex-row justify-center gap-x-4'>
-                <div className="w-80 h-64 px-6 py-12 bg-white rounded shadow flex-col justify-center items-center gap-3 inline-flex">
-                    <img className="w-20 h-20" src={sol1} />
-                    <div className="text-slate-800 text-xl font-medium font-['Roboto'] leading-normal">Choose a Pricing Plan</div>
-                    <div className="w-64 text-center text-slate-500 text-base font-normal font-['Montserrat'] leading-tight">Cost-effective plans to make it ease for you</div>
-                </div>
-                <div className="w-80 h-64 px-6 py-12 bg-white rounded shadow flex-col justify-center items-center gap-3 inline-flex">
-                    <img className="w-20 h-20" src={sol2} />
-                    <div className="text-slate-800 text-xl font-medium font-['Roboto'] leading-normal">Setup Your Profile</div>
-                    <div className="w-64 text-center text-slate-500 text-base font-normal font-['Montserrat'] leading-tight">Complete your profile to make it go and working</div>
-                </div>
-                <div className="w-80 h-64 px-6 py-12 bg-white rounded shadow flex-col justify-center items-center gap-3 inline-flex">
-                    <img className="w-20 h-20" src={sol3} />
-                    <div className="text-slate-800 text-xl font-medium font-['Roboto'] leading-normal">Camera Configuration </div>
-                    <div className="w-64 text-center text-slate-500 text-base font-normal font-['Montserrat'] leading-tight">Setup cameras and configure them into system</div>
-                </div>
-                <div className="w-80 h-64 px-6 py-12 bg-white rounded shadow flex-col justify-center items-center gap-3 inline-flex">
-                    <img className="w-20 h-20" src={sol4} />
-                    <div className="text-slate-800 text-xl font-medium font-['Roboto'] leading-normal">Face Registration </div>
-                    <div className="w-64 text-center text-slate-500 text-base font-normal font-['Montserrat'] leading-tight">Registration of patient’s face  needed for prediction</div>
-                </div>
+  return (
+    <>
+      <Typography variant="h5" sx={{ fontFamily: 'Roboto', fontWeight: 'medium', textAlign: 'center', color: '#4E3AB0' }}>
+        Hassel free solution
+      </Typography>
 
-            </div>
+      <Typography variant="h1" sx={{ fontFamily: 'Roboto', fontWeight: 'bold', textAlign: 'center' }}>
+        Easy steps for your solution
+      </Typography>
 
-        </section>
-    )
-}
-
-export default Solutions
+      <Grid container direction="row" justifyContent='center' sx={{ gap: '12px', marginTop:'24px'}}>
+        <SolutionCard title = "Choose a Pricing Plan" description= "Cost-effective plans to make it ease for you" image={sol1}/>
+        <SolutionCard title = "Setup Your Profile" description= "Complete your profile to make it go and working" image={sol2}/>
+        <SolutionCard title = "Camera Configuration" description= "Setup cameras and configure them into system" image={sol3}/>
+        <SolutionCard title = "Face Registration" description= "Registration of patient’s face  needed for prediction" image={sol4}/>
+      </Grid>
+    </>
+  );
+};
+export default Solutions;
