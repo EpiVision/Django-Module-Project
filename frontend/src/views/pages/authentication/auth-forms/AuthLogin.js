@@ -32,7 +32,8 @@ import AnimateButton from 'ui-component/extended/AnimateButton';
 // assets
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 import Google from 'assets/images/icons/social-google.svg';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
@@ -57,8 +58,24 @@ const FirebaseLogin = ({ ...others }) => {
     event.preventDefault();
   };
 
+  const [open, setOpen] = useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+
   return (
     <>
+     <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+        onClick={handleClose}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Grid container direction="column" justifyContent="center" spacing={2}>
         {/* <Grid item xs={12}>
           <AnimateButton>
@@ -129,6 +146,7 @@ const FirebaseLogin = ({ ...others }) => {
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
+            handleOpen();
             if (scriptedRef.current) {
               // call api for login
               fetch(baseURL + '/login/', {
@@ -144,6 +162,7 @@ const FirebaseLogin = ({ ...others }) => {
                     console.log(data);
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
+                    handleClose();
                     window.location.replace('/dashboard');
                     setStatus({ success: true });
                   });
@@ -152,6 +171,7 @@ const FirebaseLogin = ({ ...others }) => {
                     console.log("error","data");
                     alert(data.message);
                     setStatus({ success: false });
+                    handleClose();
                   });
                 }
               });

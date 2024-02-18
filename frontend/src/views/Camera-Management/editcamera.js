@@ -18,7 +18,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Arrow_forward from '@mui/icons-material/ArrowForward';
 import MainCard from 'ui-component/cards/MainCard';
-import { CustomizedSnackbars, SuccessSnackBar } from 'ui-component/Snackbar';
+import { CustomizedSnackbars } from 'ui-component/Snackbar';
 import { baseURL } from 'utils/constants';
 import { Box } from '@mui/system';
 import { useNavigate} from "react-router-dom"

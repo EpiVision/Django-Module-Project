@@ -195,6 +195,7 @@ class Patient(models.Model):
     contact = models.CharField(max_length=20, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)
     gender = models.IntegerField(blank=True, null=True)
     weight = models.IntegerField(blank=True, null=True)
+    
     userid = models.ForeignKey('AuthUser', models.DO_NOTHING, db_column='userId')  # Field name made lowercase.
 
     class Meta:

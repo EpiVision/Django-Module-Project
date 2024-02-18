@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework import views
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from modeldb.models import Patient
+from modeldb.models import Patient, AuthUser
 from moduleProject.utils import get_header_params
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -66,12 +66,16 @@ class RegisterView(views.APIView):
         if User.objects.filter(email= email).exists():
             return Response({'message': 'Email is already registered!'}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            user = User.objects.create_user(username=email,first_name=first_name, last_name=last_name, email=email, password=password)
-            patient = Patient.objects.create(fullname=user.get_full_name(),age=0,contact=phone,gender=None,weight=None,userid=user.id)
-            user.set_password(password)
-            patient.save()
-            user.save()
-            return Response({'message': 'User created successfully!'},status=status.HTTP_201_CREATED)
+            try:
+                user = User.objects.create_user(username=email,first_name=first_name, last_name=last_name, email=email, password=password)
+                auth_user = AuthUser.objects.get(id=user.id)
+                patient = Patient.objects.create(fullname=user.get_full_name(),age=0,contact=phone,gender=None,weight=None,userid=auth_user)
+                user.set_password(password)
+                patient.save()
+                user.save()
+                return Response({'message': 'User created successfully!'},status=status.HTTP_201_CREATED)
+            except:
+                return Response({'message': 'Invalid request!'},status=status.HTTP_400_BAD_REQUEST)
 
 class LogoutView(views.APIView):
 

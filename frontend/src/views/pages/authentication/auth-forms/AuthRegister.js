@@ -8,7 +8,6 @@ import {
   Box,
   Button,
   Checkbox,
-  Divider,
   FormControl,
   FormControlLabel,
   FormHelperText,
@@ -29,14 +28,16 @@ import { MuiTelInput } from 'mui-tel-input';
 
 // project imports
 import useScriptRef from 'hooks/useScriptRef';
-import Google from 'assets/images/icons/social-google.svg';
+// import Google from 'assets/images/icons/social-google.svg';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
 import { baseURL } from 'utils/constants';
 // assets
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
+import { CustomizedSnackbars } from 'ui-component/Snackbar';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 // ===========================|| FIREBASE - REGISTER ||=========================== //
 
 const FirebaseRegister = ({ ...others }) => {
@@ -74,9 +75,34 @@ const FirebaseRegister = ({ ...others }) => {
   useEffect(() => {
     changePassword('123456');
   }, []);
+  const [snackbar, setSnackbar] = useState({ text: '', severity: '', open: false, handleClose: null });
+
+  const [open, setOpen] = useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
   return (
     <>
+    <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+        onClick={handleClose}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    <CustomizedSnackbars
+        autoHideDuration={3000}
+        text={snackbar.text}
+        severity={snackbar.severity}
+        open={snackbar.open}
+        handleClose={() => {
+          setSnackbar({ open: false });
+        }}
+      />
       <Grid container direction="column" justifyContent="center" spacing={2}>
         {/* <Grid item xs={12}>
           <AnimateButton>
@@ -142,6 +168,7 @@ const FirebaseRegister = ({ ...others }) => {
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
+            handleOpen();
             if (scriptedRef.current) {
               values.phone = phone;
               fetch(baseURL + '/register/', {
@@ -152,10 +179,17 @@ const FirebaseRegister = ({ ...others }) => {
                 },
                 body: JSON.stringify(values)
               }).then((response) => {
-                if (response.status === 200) {
+                if (response.status === 201) {
                   response.json().then((data) => {
-                    console.log(data);
+                    
+                    setSnackbar({
+                      text: data.message,
+                      severity: 'success',
+                      open: true
+                    });
+                    handleClose();
                     window.location.replace('/login/');
+
                     // if (data.status === 'success') {
                     //   // localStorage.setItem('token', data.token);
                     // }
@@ -163,7 +197,12 @@ const FirebaseRegister = ({ ...others }) => {
                 } else {
                   response.json().then((data) => {
                     console.log(data);
-                    alert(data.message);
+                    setSnackbar({
+                      text: data.message,
+                      severity: 'error',
+                      open: true
+                    });
+                    handleClose();
                   });
                 }
               });
