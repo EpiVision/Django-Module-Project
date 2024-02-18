@@ -39,22 +39,22 @@ const dashboard = {
       icon: icons.IconDashboard,
       breadcrumbs: false
     },
-    {
-      id: 'stream-page',
-      title: 'Stream',
-      type: 'item',
-      url: '/Stream',
-      icon: icons.IconDeviceTv,
-      breadcrumbs: false
-    },
-    {
-      id: 'activity-page',
-      title: 'Activity Logs',
-      type: 'item',
-      url: '/Activity-Logs',
-      icon: icons.IconFileAnalytics,
-      breadcrumbs: false
-    },
+    // {
+    //   id: 'stream-page',
+    //   title: 'Stream',
+    //   type: 'item',
+    //   url: '/Stream',
+    //   icon: icons.IconDeviceTv,
+    //   breadcrumbs: false
+    // },
+    // {
+    //   id: 'activity-page',
+    //   title: 'Activity Logs',
+    //   type: 'item',
+    //   url: '/Activity-Logs',
+    //   icon: icons.IconFileAnalytics,
+    //   breadcrumbs: false
+    // },
     {
       id: 'camera-page',
       title: 'Camera Management',
@@ -63,14 +63,14 @@ const dashboard = {
       icon: icons.IconDeviceCctv,
       breadcrumbs: false
     },
-    {
-      id: 'seizure-page',
-      title: 'Seizure Analysis',
-      type: 'item',
-      url: '/Seizure-Analysis',
-      icon: icons.IconFileReport,
-      breadcrumbs: false
-    },
+    // {
+    //   id: 'seizure-page',
+    //   title: 'Seizure Analysis',
+    //   type: 'item',
+    //   url: '/Seizure-Analysis',
+    //   icon: icons.IconFileReport,
+    //   breadcrumbs: false
+    // },
     {
       id: 'profile-page',
       title: 'Patient Profile',
