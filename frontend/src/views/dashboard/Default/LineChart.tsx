@@ -1,7 +1,7 @@
 import React from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { baseURL, getBgColors, getSolidColors } from 'utils/constants';
+import { baseURL, getBgColor, getSolidColor } from 'utils/constants';
 import { useEffect } from 'react';
 import { useState } from 'react';
 
@@ -58,8 +58,8 @@ export function LineChart() {
               return {
                 label: activity.activity_name,
                 data: activity.week_count,
-                borderColor: getSolidColors()[index],
-                backgroundColor: getBgColors()[index]
+                borderColor: getSolidColor()[index],
+                backgroundColor: getBgColor()[index]
               };
             })
           });

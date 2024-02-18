@@ -18,14 +18,22 @@ const colorPalette = [
   [142, 68, 173] // Dark Orchid
 ];
 
-export function getSolidColors() {
+export function getSolidColor() {
   let colors = colorPalette;
   // let colors = colorPalette.slice(0, endIndex);
   return colors.map((color) => `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
 }
+export function getSolidColors(endIndex) {
+  let colors = colorPalette.slice(0, endIndex);
+  return colors.map((color) => `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
+}
 
-export function getBgColors() {
+export function getBgColor() {
   let colors = colorPalette;
   // let colors = colorPalette.slice(0, endIndex);
+  return colors.map((color) => `rgb(${color[0]}, ${color[1]}, ${color[2]}, 0.5)`);
+}
+export function getBgColors(endIndex) {
+  let colors = colorPalette.slice(0, endIndex);
   return colors.map((color) => `rgb(${color[0]}, ${color[1]}, ${color[2]}, 0.5)`);
 }

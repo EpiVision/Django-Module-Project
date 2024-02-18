@@ -3,18 +3,9 @@ import {
   Typography,
   Button,
   TextField,
-  FormControl,
-  OutlinedInput,
   InputAdornment,
-  FormHelperText,
-  InputLabel,
-  IconButton,
   MenuItem
 } from '@mui/material';
-import Table from 'views/utilities/table.js';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-// project imports
 import MainCard from 'ui-component/cards/MainCard';
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
@@ -24,11 +15,11 @@ import Grid from '@mui/material/Grid';
 import Avatar from '@mui/material/Avatar';
 import { useState } from 'react';
 import { baseURL } from 'utils/constants';
-import { get } from 'immutable';
 import { useFormik } from 'formik';
-import * as yup from 'yup';
+
 import { MuiTelInput } from 'mui-tel-input';
-import { useCookies } from 'react-cookie';
+import { CustomizedSnackbars } from 'ui-component/Snackbar';
+import useCookies from 'hooks/useCookies';
 // ==============================|| SAMPLE PAGE ||============================== //
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -38,14 +29,17 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary
 }));
 
+const initialValues= {
+  weight: '',
+  age: '',
+  contact: '',
+  gender: ''
+};
 const PatientProfilePage = () => {
   if (localStorage.getItem('user') === null) {
     window.location.href = '/login';
   } 
-  // else {
-  //   window.location.href = '/dashboard';
-  // }
-  const [cookies, setCookie] = useCookies(['patient']);
+  
   const [patient, setPatient] = useState({
     id: -1,
     fullname: 'dummy',
@@ -55,15 +49,10 @@ const PatientProfilePage = () => {
     weight: 0,
     userid: -1
   });
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
+  const [cookies, setCookie] = useCookies(['patient']);
+  const [snackbar, setSnackbar] = useState({ text: '', severity: '', open: false, handleClose: null });
 
-  function getPatientInfo() {
-    const patient = cookies.patient;
-    console.log(patient);
-    if (patient) {
-      setPatient(patient);
-      return;
-    }
+  React.useEffect(() => {
     fetch(baseURL + '/profile/', {
       method: 'GET',
       headers: {
@@ -74,8 +63,12 @@ const PatientProfilePage = () => {
     }).then((response) => {
       if (response.status === 200) {
         response.json().then((data) => {
-          setCookie('patient', JSON.stringify(data));
+          initialValues.weight = data['weight'];
+          initialValues.age = data['age'];
+          initialValues.contact = data['contact'];
+          initialValues.gender = data['gender'];
           setPatient(data);
+          setCookie('patient', JSON.stringify(data));
         });
       } else {
         response.json().then((data) => {
@@ -83,13 +76,8 @@ const PatientProfilePage = () => {
         });
       }
     });
-  }
+  }, []); 
 
-  React.useEffect(() => {
-    getPatientInfo();
-  }, [patient]); // getPatientInfo
-
-  const [showPassword, setShowPassword] = React.useState(false);
   const genders = [
     {
       value: '0',
@@ -105,37 +93,53 @@ const PatientProfilePage = () => {
     }
   ];
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-
-  const validationSchema = yup.object({
-    email: yup.string('Enter your email').email('Enter a valid email').required('Email is required'),
-    password: yup.string('Enter your password').min(8, 'Password should be of minimum 8 characters length').required('Password is required')
-  });
 
   const formik = useFormik({
-    initialValues: {
-      email: user.email,
-      password: user.password,
-      weight: patient.weight,
-      age: patient.age,
-      contact: patient.contact,
-      gender: patient.gender
-    },
-    validationSchema: validationSchema,
+    initialValues,
+    // validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log('save btn');
-      alert(JSON.stringify(values, null, 2));
+      fetch(baseURL + '/updatePatient/', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: 'Token ' + localStorage.getItem('token')
+        },
+        body: JSON.stringify(values)
+      }).then((response) => {
+        if (response.status === 200) {
+          response.json().then((data) => {
+            setSnackbar({
+              text: data.message,
+              severity: 'success',
+              open: true
+            });
+          });
+        } else {
+          response.json().then((data) => {
+            setSnackbar({
+              text: data.message,
+              severity: 'warning',
+              open: true
+            });
+          });
+        }
+      });
     }
   });
 
   return (
     <>
       {/* <br></br> */}
-
+      <CustomizedSnackbars
+        autoHideDuration={3000}
+        text={snackbar.text}
+        severity={snackbar.severity}
+        open={snackbar.open}
+        handleClose={() => {
+          setSnackbar({ open: false });
+        }}
+      />
       <MainCard title="Profile">
         {/* <Typography variant="body2">Stream Page</Typography> */}
         <br></br>
@@ -165,7 +169,7 @@ const PatientProfilePage = () => {
         <br></br>
         <form onSubmit={formik.handleSubmit}>
           <Grid container direction="column" justifyContent="space-evenly" alignItems="center">
-            <Grid container marginBottom={3} direction="row" justifyContent="space-evenly" alignItems="center">
+            {/* <Grid container marginBottom={3} direction="row" justifyContent="space-evenly" alignItems="center">
               <Grid item xs="12" sm={5}>
                 <TextField
                   fullWidth
@@ -208,7 +212,7 @@ const PatientProfilePage = () => {
                   />
                 </FormControl>
               </Grid>
-            </Grid>
+            </Grid> */}
 
             <Grid container marginBottom={3} direction="row" justifyContent="space-evenly" alignItems="center">
               <Grid item xs="12" sm={5}>

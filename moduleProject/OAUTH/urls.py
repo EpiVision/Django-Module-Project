@@ -7,6 +7,7 @@ urlpatterns = [
     path('logout/', views.LogoutView.as_view()),
     path('profile/', views.ProfileView.as_view()),
     path('register/', views.RegisterView.as_view(), name='register'),
+    path('updatePatient/', views.updatePatient, name='updatePatient'),
     # path("google/login/", views.GoogleLoginView.as_view(), name="google_login"),
     # path("~redirect/", views.UserRedirectView.as_view(), name="redirect")
     # path('signIn/', views.signIn, name='signIn'),

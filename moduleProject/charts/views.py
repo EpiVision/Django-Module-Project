@@ -56,7 +56,7 @@ class ActivityTrend(views.APIView):
 
         # Convert the dictionary values to a list
         result_list = list(activities.values())
-        
+
         # Serialize the data
         serialized_data = serializers.ActivitySerializer(result_list, many=True)
         # Access the serialized data as a dictionary
@@ -121,3 +121,212 @@ class ActivityViewSet(views.APIView):
         serializer = serializers.ActivitySetSerializer(activities, many=True)
         res = serializer.data
         return Response({"activities": res}, status=status.HTTP_200_OK)
+
+
+class ActivitiesOfDayCountView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Get all activities of patient from its every device and count of each activity for the same day",
+        manual_parameters=get_header_params(),
+        responses={200: "Activities of the day with count"},
+    )
+    def get(self, request):
+        patient = Patient.objects.get(userid=self.request.user.id)
+        devices = Devices.objects.filter(accountid=patient.id).values_list(
+            "deviceid", flat=True
+        )
+        # Fetch the last activity
+        last_activity = Activities.objects.last()
+
+        # Extract the day from the last activity
+        day_from_query = last_activity.start_time.date()
+
+        # Filter activities for the same day
+        activities_on_same_day = Activities.objects.filter(
+            start_time__date=day_from_query, deviceid__in=devices
+        )
+
+        # Count occurrences of each activity
+        activity_count = {}
+        for activity in activities_on_same_day:
+            activity_name = activity.name
+            if activity_name in activity_count:
+                activity_count[activity_name] += 1
+            else:
+                activity_count[activity_name] = 1
+
+        activities_name = list(activity_count.keys())
+        activities_count = list(activity_count.values())
+        # Construct the response data
+        response_data = {
+            "day": day_from_query,
+            "activities_name": activities_name,
+            "activities_count": activities_count,
+        }
+
+        return Response(response_data)
+
+
+class WeeklySleepCountView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Get count of sleep activity for each day of the week for the last 7 days",
+        manual_parameters=get_header_params(),
+        responses={200: "Weekly sleep count"},
+    )
+    def get(self, request):
+        patient = Patient.objects.get(userid=self.request.user.id)
+        devices = Devices.objects.filter(accountid=patient.id).values_list(
+            "deviceid", flat=True
+        )
+        # Fetch the last activity
+        last_activity = Activities.objects.last()
+
+        # Calculate the date 7 days before the last activity
+        start_date_last_week = last_activity.start_time.date() - timedelta(days=7)
+        start_date_two_weeks_ago = last_activity.start_time.date() - timedelta(days=14)
+        
+        # Filter activities for the last week
+        activities_last_week = Activities.objects.filter(
+            start_time__date__gte=start_date_last_week,
+            start_time__date__lt=last_activity.start_time.date(),
+        )
+
+        # Filter activities for the week before last
+        activities_two_weeks_ago = Activities.objects.filter(
+            start_time__date__gte=start_date_two_weeks_ago,
+            start_time__date__lt=start_date_last_week,
+        )
+
+        # Calculate the count of sleep activity for each day of the last week
+        sleep_count_last_week = (
+            activities_last_week.filter(name="Sleeping")
+            .annotate(day_of_week=ExtractWeekDay("start_time"))
+            .values("day_of_week")
+            .annotate(sleep_count=Count("id"))
+            .order_by("day_of_week")
+        )
+
+        # Calculate the count of sleep activity for each day of the week before last
+        sleep_count_two_weeks_ago = (
+            activities_two_weeks_ago.filter(name="Sleeping")
+            .annotate(day_of_week=ExtractWeekDay("start_time"))
+            .values("day_of_week")
+            .annotate(sleep_count=Count("id"))
+            .order_by("day_of_week")
+        )
+
+        # Map day numbers to day names
+        day_names = {
+            1: "Monday",
+            2: "Tuesday",
+            3: "Wednesday",
+            4: "Thursday",
+            5: "Friday",
+            6: "Saturday",
+            7: "Sunday",
+        }
+
+        # Construct the response data
+        weekly_sleep_count = {
+            "last_week": {
+                day_names[count["day_of_week"]]: count["sleep_count"]
+                for count in sleep_count_last_week
+            },
+            "two_weeks_ago": {
+                day_names[count["day_of_week"]]: count["sleep_count"]
+                for count in sleep_count_two_weeks_ago
+            },
+        }
+
+        # Construct the response data
+        response = {
+            "week1": list(weekly_sleep_count["last_week"].values()),
+            "week2": list(weekly_sleep_count["two_weeks_ago"].values()),
+        }
+
+        return Response(response)
+
+
+class WeeklySeizureCountView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Get count of sleep activity for each day of the week for the last 7 days",
+        manual_parameters=get_header_params(),
+        responses={200: "Weekly sleep count"},
+    )
+    def get(self, request):
+        patient = Patient.objects.get(userid=self.request.user.id)
+        devices = Devices.objects.filter(accountid=patient.id).values_list(
+            "deviceid", flat=True
+        )
+        # Fetch the last activity
+        last_activity = Activities.objects.last()
+
+        # Calculate the date 7 days before the last activity
+        start_date_last_week = last_activity.start_time.date() - timedelta(days=7)
+        start_date_two_weeks_ago = last_activity.start_time.date() - timedelta(days=14)
+        
+        # Filter activities for the last week
+        activities_last_week = Activities.objects.filter(
+            start_time__date__gte=start_date_last_week,
+            start_time__date__lt=last_activity.start_time.date(),
+        )
+
+        # Filter activities for the week before last
+        activities_two_weeks_ago = Activities.objects.filter(
+            start_time__date__gte=start_date_two_weeks_ago,
+            start_time__date__lt=start_date_last_week,
+        )
+
+        # Calculate the count of sleep activity for each day of the last week
+        seizure_count_last_week = (
+            activities_last_week.filter(name="Seizure")
+            .annotate(day_of_week=ExtractWeekDay("start_time"))
+            .values("day_of_week")
+            .annotate(seizure_count=Count("id"))
+            .order_by("day_of_week")
+        )
+
+        # Calculate the count of sleep activity for each day of the week before last
+        seizure_count_two_weeks_ago = (
+            activities_two_weeks_ago.filter(name="Seizure")
+            .annotate(day_of_week=ExtractWeekDay("start_time"))
+            .values("day_of_week")
+            .annotate(seizure_count=Count("id"))
+            .order_by("day_of_week")
+        )
+
+        # Map day numbers to day names
+        day_names = {
+            1: "Monday",
+            2: "Tuesday",
+            3: "Wednesday",
+            4: "Thursday",
+            5: "Friday",
+            6: "Saturday",
+            7: "Sunday",
+        }
+
+        # Construct the response data
+        weekly_seizure_count = {
+            "last_week": {
+                day_names[count["day_of_week"]]: count["seizure_count"]
+                for count in seizure_count_last_week
+            },
+            "two_weeks_ago": {
+                day_names[count["day_of_week"]]: count["seizure_count"]
+                for count in seizure_count_two_weeks_ago
+            },
+        }
+
+        # Construct the response data
+        response = {
+            "week1": list(weekly_seizure_count["last_week"].values()),
+            "week2": list(weekly_seizure_count["two_weeks_ago"].values()),
+        }
+
+        return Response(response)

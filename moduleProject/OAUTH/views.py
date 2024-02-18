@@ -9,6 +9,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from modeldb.models import Patient
 from moduleProject.utils import get_header_params
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 # from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 # from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 # from dj_rest_auth.registration.views import SocialLoginView
@@ -65,7 +67,7 @@ class RegisterView(views.APIView):
             return Response({'message': 'Email is already registered!'}, status=status.HTTP_400_BAD_REQUEST)
         else:
             user = User.objects.create_user(username=email,first_name=first_name, last_name=last_name, email=email, password=password)
-            patient = Patient.objects.create(fullname=user.get_full_name(),age=0,contact=phone,gender=None,weight=None,accountid=user.id)
+            patient = Patient.objects.create(fullname=user.get_full_name(),age=0,contact=phone,gender=None,weight=None,userid=user.id)
             user.set_password(password)
             patient.save()
             user.save()
@@ -87,8 +89,26 @@ class ProfileView(generics.RetrieveAPIView):
         patient = Patient.objects.get(userid=self.request.user.id)
         return patient
     
+    
 class ProtectedResourceView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         return Response({"message": "This is a protected resource!"})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+# update patient profile
+def updatePatient(request):
+    if request.method == 'POST':
+        patient = Patient.objects.get(userid=request.user.id)
+        patient.age = request.data['age']
+        patient.contact = request.data['contact']
+        patient.weight = request.data['weight']
+        patient.gender = request.data['gender']
+        patient.save()
+
+        return Response({'message': 'Profile updated successfully!'},status=status.HTTP_200_OK)
+    else:
+        return Response({'message': 'Invalid request!'},status=status.HTTP_400_BAD_REQUEST)
