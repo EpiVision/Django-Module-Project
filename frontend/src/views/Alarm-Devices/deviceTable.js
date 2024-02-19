@@ -425,13 +425,11 @@ export default function EnhancedTable() {
                       />
                     </TableCell>
                     <TableCell component="th" id={labelId} scope="row" padding="none">
-                      {row.deviceid}
+                      {row.id}
                     </TableCell>
-                    <TableCell align="right">{row.companyname}</TableCell>
-                    <TableCell align="right">{row.username}</TableCell>
-                    <TableCell align="right">{row.ipaddress}</TableCell>
-                    <TableCell align="right">{row.rtspport}</TableCell>
-                    <TableCell align="right">{row.channel}</TableCell>
+                    <TableCell align="right">{row.devicename}</TableCell>
+                    <TableCell align="right">{row.paircode}</TableCell>
+                    <TableCell align="right">{row.patientid}</TableCell>
                   </TableRow>
                 );
               })}

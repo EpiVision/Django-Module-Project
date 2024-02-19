@@ -5,6 +5,8 @@ import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
 import AddCamera from 'views/Camera-Management/addcamera';
 import EditCamera from 'views/Camera-Management/editcamera';
+import AddDevice from 'views/Alarm-Devices/adddevice';
+import EditDevice from 'views/Alarm-Devices/editdevice';
 
 
 // dashboard routing
@@ -205,6 +207,14 @@ export const MainRoutes = {
       //   },
       // ]
 
+    },
+    {
+      path: 'Alarm-Devices/adddevice',
+      element: <AddDevice />
+    },
+    {
+      path: 'Alarm-Devices/editdevice',
+      element: <EditDevice />
     },
     {
       path: 'Camera-Management',

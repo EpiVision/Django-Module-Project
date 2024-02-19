@@ -24,6 +24,7 @@ import { Box } from '@mui/system';
 import { useNavigate} from "react-router-dom"
 
 const initialValues = {
+  id:'',
   deviceName: '',
   paircode: '',
   patientId: ''
@@ -41,10 +42,10 @@ const EditCamera = () => {
   };
   useEffect(() => {
     const device = JSON.parse(localStorage.getItem('selected'));
-
-    initialValues.deviceName = device.deviceName;
+    initialValues.id = device.id;
+    initialValues.deviceName = device.devicename;
     initialValues.paircode = device.paircode;
-    initialValues.patientId = device.patientId;
+    initialValues.patientId = device.patientid;
     console.log(initialValues);
   }, []);
 

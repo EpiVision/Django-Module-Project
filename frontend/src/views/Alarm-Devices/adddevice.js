@@ -24,6 +24,7 @@ import { useNavigate} from "react-router-dom";
 import { Box } from '@mui/system';
 
 const initialValues = {
+  id:"",
   deviceName: '',
   paircode: '',
   patientId: ''
@@ -86,10 +87,10 @@ const AddDevice = () => {
     setAlertButton(true);
   };
 
-  const [startStream, setStartStream] = useState(false);
-  function handleTestStream() {
-    setStartStream(!startStream);
-  }
+  // const [startStream, setStartStream] = useState(false);
+  // function handleTestStream() {
+  //   setStartStream(!startStream);
+  // }
   // useEffect(() => {
   //   if (startStream) {
   //     setReady(true);

@@ -8,7 +8,9 @@ from . import serializers
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from moduleProject.utils import get_header_params
-
+from rest_framework.decorators import api_view, permission_classes
+from datetime import datetime
+from modeldb.models import Activities
 
 class AlarmDevice(views.APIView):
     queryset = Alarmdevices.objects.all()
@@ -24,7 +26,7 @@ class AlarmDevice(views.APIView):
     def post(self, request):
         patient = Patient.objects.get(userid=self.request.user.id)
         d = Alarmdevices.objects.create(
-            deviceName=self.request.data["deviceName"],
+            devicename=self.request.data["deviceName"],
             paircode=self.request.data["paircode"],
             patientid=patient,
         )
@@ -90,7 +92,7 @@ class AlarmDevice(views.APIView):
         # check if the device belongs to the user
         patient = Patient.objects.get(userid=self.request.user.id)
         device = Alarmdevices.objects.filter(
-            deviceid=self.request.data["Id"], patientid=patient
+            id=self.request.data["id"], patientid=patient
         )
         if not device:
             return Response(
@@ -98,10 +100,25 @@ class AlarmDevice(views.APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         device.update(
-            deviceName=self.request.data["deviceName"],
+            devicename=self.request.data["deviceName"],
             paircode=self.request.data["paircode"],
             patientid=patient,
         )
         return Response(
             {"message": "Device updated successfully!"}, status=status.HTTP_200_OK
         )
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def raiseAlarm(request):
+    patient = Patient.objects.get(userid=request.user.id)
+    activity = Activities.objects.get(id=1015)
+    alarm = Alarms.objects.create(
+        status=1,
+        activityid = activity,
+        starttime=datetime.now(),
+    )
+    return Response(
+        {"message": "Alarm raised successfully!"},
+        status=status.HTTP_201_CREATED,
+    )
