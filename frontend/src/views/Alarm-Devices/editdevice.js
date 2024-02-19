@@ -24,13 +24,9 @@ import { Box } from '@mui/system';
 import { useNavigate} from "react-router-dom"
 
 const initialValues = {
-  companyName: '',
-  userName: '',
-  password: '',
-  ipAddress: '',
-  rtspPort: '',
-  channel: '',
-  deviceId: ''
+  deviceName: '',
+  paircode: '',
+  patientId: ''
 };
 
 const EditCamera = () => {
@@ -46,13 +42,9 @@ const EditCamera = () => {
   useEffect(() => {
     const device = JSON.parse(localStorage.getItem('selected'));
 
-    initialValues.companyName = device.companyname;
-    initialValues.userName = device.username;
-    initialValues.password = device.password;
-    initialValues.ipAddress = device.ipaddress;
-    initialValues.rtspPort = device.rtspport;
-    initialValues.channel = device.channel;
-    initialValues.deviceId = device.deviceid;
+    initialValues.deviceName = device.deviceName;
+    initialValues.paircode = device.paircode;
+    initialValues.patientId = device.patientId;
     console.log(initialValues);
   }, []);
 
@@ -61,7 +53,7 @@ const EditCamera = () => {
   const [snackbar, setSnackbar] = useState({ text: '', severity: '', open: false, handleClose: null });
 
   const handleSubmit = (values) => {
-    fetch(baseURL + '/device/', {
+    fetch(baseURL + '/alarmDevice/', {
       method: 'PUT',
       headers: {
         Accept: 'application/json',
@@ -77,7 +69,7 @@ const EditCamera = () => {
             console.log(data);
             localStorage.setItem('selected', JSON.stringify(data));
             setSnackbar({
-              text: 'Device details are updated! Please test stream to confirm the changes',
+              text: 'Device details are updated!',
               severity: 'success',
               open: true
             });
@@ -128,25 +120,25 @@ const EditCamera = () => {
   function handleTestStream() {
     setStartStream(!startStream);
   }
-  useEffect(() => {
-    if (startStream) {
-      setReady(true);
-      navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-        videoRef.current.srcObject = stream;
-      });
-      console.log('values1', videoRef.current, videoRef.current);
-    } else {
-      console.log('values2', videoRef.current, videoRef.current);
-      if (videoRef.current != null) {
-        videoRef.current.srcObject.getTracks().forEach((track) => {
-          if (track.readyState == 'live' && track.kind === 'video') {
-            track.stop();
-          }
-        });
-        setReady(false);
-      }
-    }
-  }, [startStream]);
+  // useEffect(() => {
+  //   if (startStream) {
+  //     setReady(true);
+  //     navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+  //       videoRef.current.srcObject = stream;
+  //     });
+  //     console.log('values1', videoRef.current, videoRef.current);
+  //   } else {
+  //     console.log('values2', videoRef.current, videoRef.current);
+  //     if (videoRef.current != null) {
+  //       videoRef.current.srcObject.getTracks().forEach((track) => {
+  //         if (track.readyState == 'live' && track.kind === 'video') {
+  //           track.stop();
+  //         }
+  //       });
+  //       setReady(false);
+  //     }
+  //   }
+  // }, [startStream]);
 
   const formik = useFormik({
     initialValues,
@@ -154,7 +146,7 @@ const EditCamera = () => {
   });
 
   return (
-    <MainCard title="Edit Camera">
+    <MainCard title="Edit Alarm Device">
       <CustomizedSnackbars
         autoHideDuration={3000}
         text={snackbar.text}
@@ -171,12 +163,12 @@ const EditCamera = () => {
               <br></br>
               <Grid item sm={12}>
                 <TextField
-                  label="Company Name"
+                  label="Device Name"
                   variant="outlined"
                   fullWidth
-                  id="companyName"
-                  name="companyName"
-                  value={formik.values.companyName}
+                  id="deviceName"
+                  name="deviceName"
+                  value={formik.values.deviceName}
                   onChange={formik.handleChange}
                   disabled={alertButton}
                   required
@@ -184,54 +176,26 @@ const EditCamera = () => {
               </Grid>
               <Grid item sm={12}>
                 <TextField
-                  label="User Name"
+                  label="Pair Code"
                   variant="outlined"
                   fullWidth
-                  id="userName"
-                  name="userName"
-                  value={formik.values.userName}
+                  id="paircode"
+                  name="paircode"
+                  value={formik.values.paircode}
                   onChange={formik.handleChange}
                   required
                   disabled={alertButton}
                 />
               </Grid>
-              <Grid item sm={12}>
-                <FormControl sx={{ width: '100%', required: true }} variant="outlined" disabled={alertButton} required>
-                  <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-                  <OutlinedInput
-                    id="outlined-adornment-password"
-                    type={showPassword ? 'text' : 'password'}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    inputProps={{
-                      onChange: (e) => {
-                        formik.setFieldValue('password', e.target.value);
-                      },
-                      onBlur: formik.handleBlur,
-                      value: formik.values.password
-                    }}
-                    label="Password"
-                  />
-                </FormControl>
-              </Grid>
+              
               <Grid item sm={12}>
                 <TextField
-                  label="IP Address"
+                  label="Patient Id"
                   variant="outlined"
                   fullWidth
-                  id="ipAddress"
-                  name="ipAddress"
-                  value={formik.values.ipAddress}
+                  id="patientId"
+                  name="patientId"
+                  value={formik.values.patientId}
                   onChange={formik.handleChange}
                   disabled={alertButton}
                   required
@@ -239,94 +203,19 @@ const EditCamera = () => {
               </Grid>
             </Grid>
             <Grid container direction={'column'} sm={6} alignItems={'center'} justifyContent={'center'}>
-              <Card
-                variant="outlined"
-                sx={{
-                  width: window.screen.availWidth * 0.3,
-                  height: '310px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: 'grey.300'
-                }}
-              >
-                <Grid item textAlign={'center'}>
-                  {isReady ? (
-                    <video ref={videoRef} controls width="100%" height="auto" />
-                  ) : (
-                    <Typography variant="h3" color={'grey.500'}>
-                      No Source
-                    </Typography>
-                  )}
-                </Grid>
-              </Card>
-
-              <div style={{ width: window.screen.availWidth * 0.3, marginTop: 5 }}>
-                {!startStream ? (
-                  <Button fullWidth variant="contained" color="secondary" onClick={handleTestStream}>
-                    Test Stream
-                  </Button>
-                ) : (
-                  <Button fullWidth variant="contained" color="secondary" onClick={handleTestStream}>
-                    Stop Stream
-                  </Button>
-                )}
-              </div>
+              
             </Grid>
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="RTSP Port"
-              variant="outlined"
-              fullWidth
-              id="rtspPort"
-              name="rtspPort"
-              type="number"
-              InputProps={{ inputProps: { min: 0 } }}
-              value={formik.values.rtspPort}
-              onChange={formik.handleChange}
-              disabled={alertButton}
-              required
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Channel"
-              variant="outlined"
-              fullWidth
-              id="channel"
-              name="channel"
-              type="number"
-              InputProps={{ inputProps: { min: 0 } }}
-              value={formik.values.channel}
-              onChange={formik.handleChange}
-              disabled={alertButton}
-              required
-            />
-          </Grid>
+          
         </Grid>
         <Box sx={{ flexGrow: 1 }}>
         <Grid container justifyContent={'space-between'} direction={'row'} marginTop={3}>
           <Grid item >
-            {!alertButton ? (
+            
               <Button type="submit" variant="contained" color="secondary">
                 Save
               </Button>
-            ) : (
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => {
-                  setSnackbar({
-                    text: 'Please test stream to confirm the changes!',
-                    severity: 'info',
-                    open: true
-                  });
-                }}
-              >
-                Saved
-              </Button>
-            )}
+            
 
             {'  '}
 
@@ -345,7 +234,7 @@ const EditCamera = () => {
               variant="contained"
               color="secondary"
               onClick={() => {
-                window.location.href = '/Camera-Management';
+                window.location.href = '/Alarm-Devices';
               }}
               endIcon={<Arrow_forward />}
               disabled={!alertButton}

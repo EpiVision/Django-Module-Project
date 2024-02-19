@@ -74,40 +74,28 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: 'deviceid',
+    id: 'Id',
     numeric: true,
     disablePadding: true,
     label: 'Sr No.'
   },
   {
-    id: 'companyname',
+    id: 'deviceName',
     numeric: false,
     disablePadding: true,
-    label: 'Name'
+    label: 'Device Name'
   },
   {
-    id: 'username',
+    id: 'paircode',
     numeric: false,
     disablePadding: false,
-    label: 'Username'
+    label: 'Pair Code'
   },
   {
-    id: 'ipaddress',
+    id: 'patientId',
     numeric: false,
     disablePadding: false,
-    label: 'IP Address'
-  },
-  {
-    id: 'rtspport',
-    numeric: false,
-    disablePadding: false,
-    label: 'RTSP Port'
-  },
-  {
-    id: 'channel',
-    numeric: false,
-    disablePadding: false,
-    label: 'Channel'
+    label: 'Patient Id'
   }
 ];
 
@@ -187,7 +175,7 @@ function EnhancedTableToolbar(props) {
   function deleteSelected() {
     let sel = selected.map((s) => s.deviceid);
     console.log('Selected: ', selected);
-    fetch(baseURL + '/device/', {
+    fetch(baseURL + '/alarmDevice/', {
       method: 'DELETE',
       headers: {
         'Accept': 'application/json',
@@ -201,7 +189,7 @@ function EnhancedTableToolbar(props) {
           // console.log(data);
           // setMessage(data.message);
           // setSnackbar(true);
-          window.location.replace('/Camera-Management/');
+          window.location.replace('/Alarm-Devices/');
           setSnackbar({
             text: data.message,
             severity: 'success',
@@ -226,7 +214,7 @@ function EnhancedTableToolbar(props) {
   const handleEditBtn = () => {
     console.log('Selected: ', selected);
     localStorage.setItem('selected', JSON.stringify(selected[0]));
-    window.location.replace('/Camera-Management/editcamera');
+    window.location.replace('/Alarm-Devices/editdevice');
   }
   return (
     <Toolbar
@@ -269,7 +257,7 @@ function EnhancedTableToolbar(props) {
         </Typography>
       ) : (
         <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
-          Camera Devices
+          Alarm Devices
         </Typography>
       )}
 
@@ -313,7 +301,7 @@ export default function EnhancedTable() {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   useEffect(() => {
-    fetch(baseURL + '/device/', {
+    fetch(baseURL + '/alarmDevice/', {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -326,7 +314,7 @@ export default function EnhancedTable() {
           console.log(data);
           rows = data.devices;
           console.log('Rows in call: ', rows);
-          setOrderBy('deviceid');
+          setOrderBy('Id');
           // window.location.replace('/login/');
           // if (data.status === 'success') {
           //   // localStorage.setItem('token', data.token);

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import views
 from rest_framework.response import Response
 from rest_framework import permissions
-from modeldb.models import Devices, Patient
+from modeldb.models import Alarmdevices, Patient, Alarms
 from rest_framework import status
 from . import serializers
 from drf_yasg.utils import swagger_auto_schema
@@ -11,26 +11,22 @@ from moduleProject.utils import get_header_params
 
 
 class AlarmDevice(views.APIView):
-    queryset = Devices.objects.all()
+    queryset = Alarmdevices.objects.all()
     serializer_class = serializers.DeviceSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     @swagger_auto_schema(
-        operation_description="Add a new device",
+        operation_description="Add a new Alarm device",
         manual_parameters=get_header_params(),
         request_body=serializers.DeviceSerializer,
         responses={201: serializers.DeviceSerializer(many=False)},
     )
     def post(self, request):
         patient = Patient.objects.get(userid=self.request.user.id)
-        d = Devices.objects.create(
-            companyname=self.request.data["companyName"],
-            ipaddress=self.request.data["ipAddress"],
-            password=self.request.data["password"],
-            username=self.request.data["userName"],
-            rtspport=self.request.data["rtspPort"],
-            channel=self.request.data["channel"],
-            accountid=patient,
+        d = Alarmdevices.objects.create(
+            deviceName=self.request.data["deviceName"],
+            paircode=self.request.data["paircode"],
+            patientid=patient,
         )
         s = serializers.DeviceSerializer(d)
         return Response(
@@ -46,7 +42,7 @@ class AlarmDevice(views.APIView):
     )
     def get(self, request):
         patient = Patient.objects.get(userid=self.request.user.id)
-        devices = Devices.objects.filter(accountid=patient)
+        devices = Alarmdevices.objects.filter(patientid=patient)
         s = serializers.DeviceSerializer(devices, many=True)
         return Response({"devices": s.data}, status=status.HTTP_200_OK)
 
@@ -57,22 +53,22 @@ class AlarmDevice(views.APIView):
         responses={200: "Device deleted successfully!", 400: "Device does not exist!"},
     )
     def delete(self, request):
-        print(f'deviceid: {"deviceid" in self.request.data}, {self.request.data}')
-        if "deviceid" not in self.request.data:
+        print(f'Id: {"Id" in self.request.data}, {self.request.data}')
+        if "Id" not in self.request.data:
             return Response(
                 {"message": "Device id is required!"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         # check if deviceid is a list or number and act accordingly
         devices = []
-        if not isinstance(self.request.data["deviceid"], list):
-            devices.append(self.request.data["deviceid"])
+        if not isinstance(self.request.data["Id"], list):
+            devices.append(self.request.data["Id"])
         else:
-            devices = self.request.data["deviceid"]
-        for deviceid in self.request.data["deviceid"]:
+            devices = self.request.data["Id"]
+        for deviceid in self.request.data["Id"]:
             # check if the device belongs to the user
             patient = Patient.objects.get(userid=self.request.user.id)
-            device = Devices.objects.filter(deviceid=deviceid, accountid=patient)
+            device = Alarmdevices.objects.filter(deviceid=deviceid, patientid=patient)
             if not device:
                 return Response(
                     {"message": "Device does not exist!"},
@@ -93,8 +89,8 @@ class AlarmDevice(views.APIView):
         print(self.request.data)
         # check if the device belongs to the user
         patient = Patient.objects.get(userid=self.request.user.id)
-        device = Devices.objects.filter(
-            deviceid=self.request.data["deviceId"], accountid=patient
+        device = Alarmdevices.objects.filter(
+            deviceid=self.request.data["Id"], patientid=patient
         )
         if not device:
             return Response(
@@ -102,12 +98,9 @@ class AlarmDevice(views.APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         device.update(
-            companyname=self.request.data["companyName"],
-            ipaddress=self.request.data["ipAddress"],
-            password=self.request.data["password"],
-            username=self.request.data["userName"],
-            rtspport=self.request.data["rtspPort"],
-            channel=self.request.data["channel"],
+            deviceName=self.request.data["deviceName"],
+            paircode=self.request.data["paircode"],
+            patientid=patient,
         )
         return Response(
             {"message": "Device updated successfully!"}, status=status.HTTP_200_OK

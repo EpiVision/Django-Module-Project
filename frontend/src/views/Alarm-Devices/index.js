@@ -26,7 +26,7 @@ const AlarmManagmentPage = () => {
   }
   return (
     <>
-      <MainCard title="Camera Management" secondary="Add device" secondaryPath="/Camera-Management/addcamera/">
+      <MainCard title="Alarm Device Management" secondary="Add device" secondaryPath="/Alarm-Devices/adddevice/">
         <DeviceTable />
       </MainCard>
     </>
