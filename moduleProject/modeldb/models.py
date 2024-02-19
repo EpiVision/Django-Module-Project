@@ -35,6 +35,7 @@ class Accounts(models.Model):
         db_table = 'Accounts'
 
 
+
 class Activities(models.Model):
     name = models.CharField(max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')
     act_level = models.IntegerField()
@@ -47,6 +48,28 @@ class Activities(models.Model):
         managed = False
         db_table = 'Activities'
 
+class Alarmdevices(models.Model):
+    id = models.AutoField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    devicename = models.CharField(db_column='deviceName', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
+    paircode = models.CharField(max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')
+    patientid = models.ForeignKey('Patient', models.DO_NOTHING, db_column='patientId')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'AlarmDevices'
+
+
+class Alarms(models.Model):
+    id = models.AutoField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    stoppedby = models.ForeignKey(Alarmdevices, models.DO_NOTHING, db_column='stoppedBy', blank=True, null=True)  # Field name made lowercase.
+    starttime = models.DateTimeField(db_column='startTime')  # Field name made lowercase.
+    stoptime = models.DateTimeField(db_column='stopTime', blank=True, null=True)  # Field name made lowercase.
+    activityid = models.ForeignKey(Activities, models.DO_NOTHING, db_column='activityId', blank=True, null=True)  # Field name made lowercase.
+    status = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Alarms'
 
 class Assignedmodels(models.Model):
     # id = models.IntegerField()

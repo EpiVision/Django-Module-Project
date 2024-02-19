@@ -64,14 +64,14 @@ const dashboard = {
       icon: icons.IconDeviceCctv,
       breadcrumbs: false
     },
-    // {
-    //   id: 'alarm-page',
-    //   title: 'Alarm Devices',
-    //   type: 'item',
-    //   url: '/Alarm-Devices',
-    //   icon: icons.IconPlayerRecord,
-    //   breadcrumbs: false
-    // },
+    {
+      id: 'alarm-page',
+      title: 'Alarm Devices',
+      type: 'item',
+      url: '/Alarm-Devices',
+      icon: icons.IconPlayerRecord,
+      breadcrumbs: false
+    },
     {
       id: 'profile-page',
       title: 'Patient Profile',
