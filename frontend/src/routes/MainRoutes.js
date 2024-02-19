@@ -6,6 +6,7 @@ import Loadable from 'ui-component/Loadable';
 import AddCamera from 'views/Camera-Management/addcamera';
 import EditCamera from 'views/Camera-Management/editcamera';
 
+
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
 
@@ -21,6 +22,7 @@ const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 const Stream = Loadable(lazy(() => import('views/Stream')));
 const ActivityLogs = Loadable(lazy(() => import('views/Activity-Logs')));
 const CameraManagement = Loadable(lazy(() => import('views/Camera-Management')));
+const AlarmManagement = Loadable(lazy(() => import('views/Alarm-Devices')));
 const SeizureAnalysis = Loadable(lazy(() => import('views/Seizure-Analysis')));
 const PatientProfile = Loadable(lazy(() => import('views/Patient-Profile')));
 const HomePage = Loadable(lazy(() => import('views/pages/homepage')));
@@ -192,6 +194,17 @@ export const MainRoutes = {
     {
       path: 'Activity-Logs',
       element: <ActivityLogs />
+    },
+    {
+      path: 'Alarm-Devices',
+      element: <AlarmManagement />,
+      // children: [
+      //   {
+      //     path: 'addcamera',
+      //     element: <AddCamera />
+      //   },
+      // ]
+
     },
     {
       path: 'Camera-Management',

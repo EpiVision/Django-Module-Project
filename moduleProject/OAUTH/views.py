@@ -116,3 +116,15 @@ def updatePatient(request):
         return Response({'message': 'Profile updated successfully!'},status=status.HTTP_200_OK)
     else:
         return Response({'message': 'Invalid request!'},status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([])
+def getToken(request):
+    if request.method == 'GET':
+        patiendId = request.data['patiendId']
+        p = Patient.objects.get(id=patiendId)
+        user = User.objects.get(id=p.userid_id)
+        token = Token.objects.get(user=user)
+        return Response({'token': str(token)}, status=status.HTTP_200_OK)
+    else:
+        return Response({'message': 'Invalid request!'},status=status.HTTP_400_BAD_REQUEST)

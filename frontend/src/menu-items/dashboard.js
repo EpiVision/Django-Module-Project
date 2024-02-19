@@ -8,7 +8,8 @@ import {
   IconPlayerRecord,
   IconDeviceCctv,
   IconUserCircle,
-  IconDashboard
+  IconDashboard,
+  IconAlarm
 } from '@tabler/icons';
 
 // constant
@@ -64,11 +65,11 @@ const dashboard = {
       breadcrumbs: false
     },
     // {
-    //   id: 'seizure-page',
-    //   title: 'Seizure Analysis',
+    //   id: 'alarm-page',
+    //   title: 'Alarm Devices',
     //   type: 'item',
-    //   url: '/Seizure-Analysis',
-    //   icon: icons.IconFileReport,
+    //   url: '/Alarm-Devices',
+    //   icon: icons.IconPlayerRecord,
     //   breadcrumbs: false
     // },
     {
