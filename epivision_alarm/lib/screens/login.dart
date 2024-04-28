@@ -37,14 +37,14 @@ class _LoginPageState extends State<LoginPage> {
     final String? Id = prefs.getString('Id');
     final bool? repeat = prefs.getBool('login');
     if (repeat == true) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomePage(Id: Id,)),
       );
     }
   }
 
-  void getStudentsTableData(String paircode) {
+  void getTableData(String paircode) {
     setState(() {
       isLoading = true;
     });
@@ -92,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                 prefs.setBool('login', true);
                 prefs.setString('Id', element['Id'].toString());
                 // prefs.setString('token', value);
-                return Navigator.push(
+                return Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => HomePage(Id: element['Id'].toString())),
                 );
@@ -194,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void handleSubmit(String verificationCode) {
-    getStudentsTableData(verificationCode);
+    getTableData(verificationCode);
   }
 }
 
