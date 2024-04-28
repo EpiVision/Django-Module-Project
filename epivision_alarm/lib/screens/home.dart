@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:connect_to_sql_server_directly/connect_to_sql_server_directly.dart';
 import 'dart:async';
@@ -176,6 +177,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   var h = 150.0;
+
+  String text = "Stop Service";
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -201,6 +204,48 @@ class _HomePageState extends State<HomePage> {
             children: [
               Column(
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        tooltip: 'Foreground Mode',
+                        icon: const Icon(Icons.visibility,),
+                        // child: const Text("Foreground Mode"),
+                        onPressed: () {
+                          FlutterBackgroundService().invoke("setAsForeground");
+                        },
+                      ),
+                      IconButton(
+                        tooltip: 'Background Mode',
+                        icon: const Icon(Icons.visibility_off),
+                        // child: const Text("Background Mode"),
+                        onPressed: () {
+                          FlutterBackgroundService().invoke("setAsBackground");
+                        },
+                      ),
+                      IconButton(
+                        tooltip: text,
+                        icon: text == 'Stop Service'? Icon(Icons.pause): Icon(Icons.play_arrow),
+                        // child: Text(text),
+                        onPressed: () async {
+                          final service = FlutterBackgroundService();
+                          var isRunning = await service.isRunning();
+                          if (isRunning) {
+                            service.invoke("stopService");
+                          } else {
+                            service.startService();
+                          }
+
+                          if (!isRunning) {
+                            text = 'Stop Service';
+                          } else {
+                            text = 'Start Service';
+                          }
+                          setState(() {});
+                        },
+                      ),
+                    ],
+                  ),
                   AnimatedContainer(
                       duration: const Duration(seconds: 1),
                       width: 200,

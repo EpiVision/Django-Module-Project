@@ -112,7 +112,7 @@ class AlarmDevice(views.APIView):
 @permission_classes([permissions.IsAuthenticated])
 def raiseAlarm(request):
     patient = Patient.objects.get(userid=request.user.id)
-    activity = Activities.objects.get(id=1015)
+    activity = Activities.objects.get(id=2009)
     alarm = Alarms.objects.create(
         status=1,
         activityid = activity,
