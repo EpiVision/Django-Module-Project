@@ -28,30 +28,31 @@ class ActivityTrend(views.APIView):
         last_inserted_row = Activities.objects.aggregate(Max("start_time"))
         lower_boundary_day = last_inserted_row["start_time__max"] - timedelta(days=7)
         
-        if(patient.id == 3):
-            last_inserted_row = Activities.objects.get(start_time='2023-11-10 22:20:00.0000000')
-            lower_boundary_day = last_inserted_row.start_time - timedelta(days=7)
+        # if(patient.id == 3):
+        #     last_inserted_row = Activities.objects.get(start_time='2023-11-10 22:20:00.0000000')
+        #     lower_boundary_day = last_inserted_row.start_time - timedelta(days=7)
 
         print(last_inserted_row)
         # Query activity name and count of activities for each weekday with a condition on deviceid
-        if(patient.id == 3):
-            weekday_activities = (
-                Activities.objects.filter(
-                    start_time__gte=lower_boundary_day, start_time__lte = last_inserted_row.start_time , deviceid__in=devices
-                )
-                .values("name", weekday=ExtractWeekDay("start_time"))
-                .annotate(activity_count=Count("id"))
-                .order_by("name", "weekday")
+        # if(patient.id == 3):
+        #     weekday_activities = (
+        #         Activities.objects.filter(
+        #             start_time__gte=lower_boundary_day, start_time__lte = last_inserted_row.start_time , deviceid__in=devices
+        #         )
+        #         .values("name", weekday=ExtractWeekDay("start_time"))
+        #         .annotate(activity_count=Count("id"))
+        #         .order_by("name", "weekday")
+        #     )
+        # else:
+        weekday_activities = (
+            Activities.objects.filter(
+                start_time__gte=lower_boundary_day, deviceid__in=devices
             )
-        else:
-            weekday_activities = (
-                Activities.objects.filter(
-                    start_time__gte=lower_boundary_day, deviceid__in=devices
-                )
-                .values("name", weekday=ExtractWeekDay("start_time"))
-                .annotate(activity_count=Count("id"))
-                .order_by("name", "weekday")
-            )
+            .values("name", weekday=ExtractWeekDay("start_time"))
+            .annotate(activity_count=Count("id"))
+            .order_by("name", "weekday")
+        )
+        
         # Organize the data in the specified format
         activities = {}
         for entry in weekday_activities:
@@ -98,7 +99,7 @@ class ActivityViewSet(views.APIView):
         try:
             patient = Patient.objects.get(userid=self.request.user.id)
             devices = Devices.objects.filter(accountid=patient)
-            print(self.request.data["deviceid"])
+            # print(self.request.data["deviceid"])
 
             if not self.request.data["deviceid"] in [d.deviceid for d in devices]:
                 return Response(
@@ -197,8 +198,8 @@ class WeeklySleepCountView(views.APIView):
             "deviceid", flat=True
         )
         # Fetch the last activity
-        # last_activity = Activities.objects.last()
-        last_activity = Activities.objects.get(start_time='2023-11-10 22:20:00.0000000')
+        last_activity = Activities.objects.last()
+        # last_activity = Activities.objects.get(start_time='2023-11-10 22:20:00.0000000')
         
 
         # Calculate the date 7 days before the last activity
@@ -208,9 +209,9 @@ class WeeklySleepCountView(views.APIView):
         # Filter activities for the last week
         activities_last_week = Activities.objects.filter(
             start_time__date__gte=start_date_last_week,
-            start_time__date__lt=last_activity.start_time.date(),
+            start_time__date__lte=last_activity.start_time.date(),
         )
-
+        print(activities_last_week) 
         # Filter activities for the week before last
         activities_two_weeks_ago = Activities.objects.filter(
             start_time__date__gte=start_date_two_weeks_ago,
@@ -263,6 +264,7 @@ class WeeklySleepCountView(views.APIView):
             "week1": list(weekly_sleep_count["last_week"].values()),
             "week2": list(weekly_sleep_count["two_weeks_ago"].values()),
         }
+        print(response)
 
         return Response(response)
 
@@ -281,8 +283,8 @@ class WeeklySeizureCountView(views.APIView):
             "deviceid", flat=True
         )
         # Fetch the last activity
-        # last_activity = Activities.objects.last()
-        last_activity = Activities.objects.get(start_time='2023-11-10 22:20:00.0000000')
+        last_activity = Activities.objects.last()
+        # last_activity = Activities.objects.get(start_time='2023-11-10 22:20:00.0000000')
 
 
         # Calculate the date 7 days before the last activity
